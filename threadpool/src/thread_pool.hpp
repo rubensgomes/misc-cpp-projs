@@ -83,7 +83,7 @@ public:
      * @return pops out the next task in the FIFO queue
      * to be executed by a task thread.
      */
-    ITask * popTask(void);
+    ITask & popTask(void);
 
     /**
      * @return the total number of threads in the pool.

@@ -11,6 +11,7 @@
  * ********************************************************
  */
 
+
 #include <boost/log/trivial.hpp>
 
 #include <stddef.h>
@@ -60,15 +61,11 @@ ThreadPool::ThreadPool(int total_threads)
     }
 
     boost::thread * t = NULL;
-    for(auto const & taskThread : m_task_threads)
+    for(std::vector<TaskThread>::size_type i=0;
+            i < m_task_threads.size(); i++)
     {
         // create and launch task thread.
-
-        // ATTENTION: We are passing a reference
-        // to the taskThread.  Therefore, if the taskThread
-        // is being deleted we MUST remember to detach this
-        // thread and remove it from the thread group
-        t = new boost::thread(boost::ref(taskThread));
+        t = new boost::thread(m_task_threads[i]);
         m_thread_group.add_thread(t);
     }
 
@@ -118,7 +115,7 @@ void ThreadPool::pushTask(ITask * task)
 }
 
 // synchronized method
-ITask * ThreadPool::popTask(void)
+ITask & ThreadPool::popTask(void)
 {
     boost::unique_lock<boost::mutex> lock(m_mutex);
 
@@ -143,6 +140,6 @@ ITask * ThreadPool::popTask(void)
     }
 
     BOOST_LOG_TRIVIAL(trace) << "popping task from queue";
-    ITask * task = m_tasks.front();
+    ITask & task = m_tasks.front();
     return task;
 }

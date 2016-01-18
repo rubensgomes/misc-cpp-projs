@@ -4,21 +4,24 @@
 # Copyright   : Copyright (C) 2016 Rubens Gomes <rubens.s.gomes@gmail.com>
 # Description : GNU Makefile to build threadpool
 #=======================================================================
-.PHONY: default all depend clean clobber install test
+.PHONY: default dir all depend clean clobber 
 
 .SUFFIXES:
 .SUFFIXES: .cpp .o
 
+.DEFAULT_GOAL = default
+
 CXX = g++
-RM = rm -f
+RM = rm 
 SHELL = /bin/sh
 
-CXXFLAGS = -std=c++11 -g -Wall -Wextra  -pedantic $(INCLUDES)
+CXXFLAGS = -std=c++11 -g -Wall -Wextra  -pedantic $(INCLUDES) $(LIBDIR)
 
 # boost must be installed in following path
 BOOSTDIR = /usr/local/boost_1_60_0
-
 BUILDDIR = build
+LIBDIR = \
+  -L/usr/local/boost_1_60_0/stage/lib
 SRCDIR = src
 TESTDIR = test
 
@@ -27,7 +30,9 @@ INCLUDES = \
   -I$(SRCDIR) \
   -I$(BOOSTDIR)
 
-LIBS =
+LIBS = \
+  -llibboost_thread \
+  -llibboost_system 
 
 SRCS = \
   $(wildcard $(SRCDIR)/*.cpp) \
@@ -45,20 +50,23 @@ $(OBJS): $(SRCS)
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
 
-all: dir $(TARGET)
+default: dir $(TARGET) 
 
-dir:
-	mkdir -p $(BUILDDIR)
+dir: $(BUILDDIR)/
+
+$(BUILDDIR)/: 
+	mkdir -p $@
 
 clean:
-	$(RM) $(OBJS) $(TARGET)
+	$(RM) -f $(OBJS) $(TARGET)
 
-distclean: clean
-	$(RM) *~ ./.depend
+clobber: clean
+	$(RM) -f *~ ./.depend
+	$(RM) -fr $(BUILDDIR)
 
 depend: .depend
 
-.depend: $(SRCS) $(TESTSRCS)
+.depend: $(SRCS)
 	$(CXX) $(CXXFLAGS) -MM $^ >>./.depend;
 
 include ./.depend
