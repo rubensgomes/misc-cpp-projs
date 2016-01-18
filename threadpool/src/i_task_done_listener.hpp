@@ -13,13 +13,15 @@
 #ifndef THREADPOOL_I_TASK_DONE_LISTENER_HPP_
 #define THREADPOOL_I_TASK_DONE_LISTENER_HPP_
 
+#include <boost/noncopyable.hpp>
+
 /**
  * A listener who is interested in knowing when its
  * task is done running.
  *
  * @author Rubens Gomes
  */
-class ITaskDoneListener
+class ITaskDoneListener: boost::noncopyable
 {
 public:
     virtual ~ITaskDoneListener() {};

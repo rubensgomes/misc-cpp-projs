@@ -40,7 +40,7 @@ OBJS = \
 TARGET = $(BUILDDIR)/test
 
 $(OBJS): $(SRCS)
-	$(CXX) $(CXXFLAGS) -o $(SRCS) $(LIBS) 
+	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS) 
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS) $(LIBS)

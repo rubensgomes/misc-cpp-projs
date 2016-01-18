@@ -14,9 +14,9 @@
 #define THREADPOOL_THREAD_POOL_HPP_
 
 #include <boost/noncopyable.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/thread.hpp>
 
-#include <stack>
 #include <vector>
 
 #include "i_task.hpp"
@@ -72,7 +72,7 @@ public:
      *
      * @param a task to be run by a thread in the pool.
      */
-    void pushTask(const ITask &);
+    void pushTask(ITask *);
 
     /**
      * A task thread makes a call to this function to
@@ -83,7 +83,7 @@ public:
      * @return pops out the next task in the FIFO queue
      * to be executed by a task thread.
      */
-    ITask & popTask(void);
+    ITask * popTask(void);
 
     /**
      * @return the total number of threads in the pool.
@@ -114,7 +114,7 @@ private:
     bool operator==(const ThreadPool &) const;
     bool operator!=(const ThreadPool &) const;
 
-    std::stack<ITask> m_tasks;
+    boost::ptr_vector<ITask> m_tasks;
     std::vector<TaskThread> m_task_threads;
 
     const int m_total_threads;

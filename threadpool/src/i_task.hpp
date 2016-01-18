@@ -13,6 +13,8 @@
 #ifndef THREADPOOL_I_TASK_HPP_
 #define THREADPOOL_I_TASK_HPP_
 
+#include <boost/noncopyable.hpp>
+
 #include "i_task_done_listener.hpp"
 
 
@@ -24,10 +26,12 @@
  *
  * @author Rubens Gomes
  */
-class ITask
+class ITask: boost::noncopyable
 {
 public:
     virtual ~ITask() {};
+
+    virtual ITask * clone() const = 0;
 
     /**
      * The run method should contain the code that is
@@ -40,4 +44,10 @@ public:
      */
     virtual ITaskDoneListener & getNotifier() const = 0;
 };
+
+inline ITask * new_clone(ITask const & rhs)
+{
+  return rhs.clone();
+}
+
 #endif /* THREADPOOL_I_TASK_HPP_ */

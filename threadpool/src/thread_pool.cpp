@@ -103,7 +103,7 @@ void ThreadPool::shutdown(void)
 }
 
 // synchronized method
-void ThreadPool::pushTask(const ITask & task)
+void ThreadPool::pushTask(ITask * task)
 {
     boost::unique_lock<boost::mutex> lock(m_mutex);
 
@@ -113,12 +113,12 @@ void ThreadPool::pushTask(const ITask & task)
     }
 
     BOOST_LOG_TRIVIAL(trace) << "pushing task to queue";
-    m_tasks.push(task);
+    m_tasks.push_back(task);
     m_condition.notify_all();
 }
 
 // synchronized method
-ITask & ThreadPool::popTask(void)
+ITask * ThreadPool::popTask(void)
 {
     boost::unique_lock<boost::mutex> lock(m_mutex);
 
@@ -143,6 +143,6 @@ ITask & ThreadPool::popTask(void)
     }
 
     BOOST_LOG_TRIVIAL(trace) << "popping task from queue";
-    ITask & task = m_tasks.pop();
+    ITask * task = m_tasks.front();
     return task;
 }

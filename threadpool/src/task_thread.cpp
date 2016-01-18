@@ -60,11 +60,11 @@ void TaskThread::operator()()
     {
       // following call blocks on a wait until a task
       // is available.
-      ITask & task = threadPool->popTask();
-      task.run();
+      ITask * task = threadPool->popTask();
+      task->run();
 
       // notifies its task listener after run is done
-      ITaskDoneListener & task_done_listener = task.getNotifier();
+      ITaskDoneListener & task_done_listener = task->getNotifier();
       task_done_listener.notifyTaskDone();
     }
 }
