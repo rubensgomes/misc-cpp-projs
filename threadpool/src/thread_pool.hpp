@@ -49,9 +49,6 @@ const int THREAD_POOL_SIZE = 10;
  */
 class ThreadPool : private boost::noncopyable
 {
-    // Singleton
-    static ThreadPool * s_instance;
-
 public:
     /**
      * Singleton instance method.
@@ -104,7 +101,7 @@ private:
     ThreadPool();
 
     // dtor is not used in singletons
-    ~ThreadPool(){};
+    ~ThreadPool();
 
     // following operators are not used in singletons
     bool operator==(const ThreadPool &) const;
@@ -118,6 +115,8 @@ private:
     boost::thread_group m_thread_group;
     boost::mutex m_mutex;
     boost::condition_variable m_condition;
+    // Singleton
+    static ThreadPool * s_instance;
 };
 
 #endif /* THREADPOOL_THREAD_POOL_HPP_ */

@@ -11,7 +11,6 @@
  * ********************************************************
  */
 
-
 #include <boost/log/trivial.hpp>
 
 #include <stddef.h>
@@ -35,10 +34,16 @@ ThreadPool * ThreadPool::instance()
     return ThreadPool::s_instance;
 }
 
+// private ctor
 ThreadPool::ThreadPool()
 :m_total_threads(THREAD_POOL_SIZE)
 {
     m_is_shutdown = false;
+}
+
+// private dtor
+ThreadPool::~ThreadPool()
+{
 }
 
 ThreadPool::ThreadPool(int total_threads)

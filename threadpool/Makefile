@@ -4,7 +4,7 @@
 # Copyright   : Copyright (C) 2016 Rubens Gomes <rubens.s.gomes@gmail.com>
 # Description : GNU Makefile to build threadpool
 #=======================================================================
-.PHONY: default dir all depend clean clobber 
+.PHONY: all clean clobber default depend dir 
 
 .SUFFIXES:
 .SUFFIXES: .cpp .o
@@ -15,26 +15,49 @@ CXX = g++
 RM = rm 
 SHELL = /bin/sh
 
-CXXFLAGS = -static -std=c++11 -g -Wall -Wextra  -pedantic \
-  $(DEFS) $(INCLUDES) $(LDIR)
-
 # boost must be installed in following path
 BOOSTDIR = /usr/local/boost_1_60_0
-BUILDDIR = build
-LDIR = \
-  -L/usr/local/boost_1_60_0/stage/lib
-SRCDIR = src
-TESTDIR = test
 
+# file to place all the makedepend depencies
+MAKEDEPFILE = Make.dep
+
+# folder to place all built files
+BUILDDIR = build
+
+# preprocessor macro definitions
 DEFS = \
   -DBOOST_THREAD_POSIX \
   -DBOOST_THREAD_USE_LIB
 
+# C header files search path
+CINCLUDES = \
+  -I/usr/lib/gcc/i686-pc-cygwin/4.9.3/include
+
+# C++ header files search path
+CXXINCLUDES = \
+  -I/usr/lib/gcc/i686-pc-cygwin/4.9.3/include/c++ \
+  -I/lib/gcc/i686-pc-cygwin/4.9.3/include/c++/i686-pc-cygwin
+
+# preprocessor header files search paths
 INCLUDES = \
   -I. \
-  -I$(SRCDIR) \
-  -I$(BOOSTDIR)
+  -I$(CXXSRCDIR) \
+  -I$(BOOSTDIR) \
+  $(CINCLUDES) \
+  $(CXXINCLUDES)
 
+# compiling flags
+CXXFLAGS = -g -c -Wall -Wextra -pedantic -std=c++11  \
+  $(DEFS) $(INCLUDES) 
+
+# linking flags
+LDFLAGS = -static
+
+# linking libs search paths
+LIB_DIRS = \
+  -L/usr/local/boost_1_60_0/stage/lib
+
+# linking libs to search
 LIBS = \
   -lboost_thread \
   -lboost_system \
@@ -44,42 +67,54 @@ LIBS = \
   -lboost_filesystem \
   -lrt
 
-MYSRCS = $(wildcard $(SRCDIR)/*.cpp) 
+# C++ project source code folder
+CXXSRCDIR = src
+CXXSRCS = $(wildcard $(CXXSRCDIR)/*.cpp) 
+
+# project test source code folder
+TESTDIR = test
 TESTSRCS = $(wildcard $(TESTDIR)/*.cpp) 
 
-SRCS = $(MYSRCS) $(TESTSRCS)
+# all the sources
+SRCS = $(CXXSRCS) $(TESTSRCS)
 
+# all the .o object files
 OBJS = \
-  $(patsubst $(SRCDIR)/%.cpp,$(BUILDDIR)/%.o,$(MYSRCS)) \
+  $(patsubst $(CXXSRCDIR)/%.cpp,$(BUILDDIR)/%.o,$(CXXSRCS)) \
   $(patsubst $(TESTDIR)/%.cpp,$(BUILDDIR)/%.o,$(TESTSRCS))
 
+# the target main application
 TARGET = $(BUILDDIR)/test
 
+# compiling objects .o files
 $(OBJS): $(SRCS)
-	$(CXX) -c $(CXXFLAGS) $< -o $@ $(LIBS) 
+	$(CXX) $(CXXFLAGS) $< -o $@ 
 
+# linking to create target
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
+	$(CXX) $(LDFLAGS) $(LIB_DIRS) -o $(TARGET) $(OBJS) $(LIBS)
 
-all: dir $(TARGET)
+# target to create the build folder
+dir:
+	mkdir -p $(BUILDDIR)
 
+# makes minimum necessary
 default: dir $(TARGET) 
 
-dir: $(BUILDDIR)/
+# makes everything
+all: clobber depend default
 
-$(BUILDDIR)/: 
-	mkdir -p $@
-
+# cleans only the minimum
 clean:
 	$(RM) -f $(OBJS) $(TARGET)
 
+# cleas all
 clobber: clean
-	$(RM) -f *~ ./.depend
 	$(RM) -fr $(BUILDDIR)
 
-depend: .depend
+# the makedepend target
+depend: 
+	makedepend -f$(MAKEDEPFILE) -- $(CXXFLAGS) -- $(SRCS)
 
-.depend: $(SRCS)
-	$(CXX) $(CXXFLAGS) -MM $^ >>./.depend;
-
-include ./.depend
+include ./$(MAKEDEPFILE)
+# DO NOT DELETE

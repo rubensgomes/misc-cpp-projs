@@ -30,6 +30,16 @@ TaskQueue * TaskQueue::instance()
     return TaskQueue::s_instance;
 }
 
+// private ctor
+TaskQueue::TaskQueue()
+{
+}
+
+// private dtor
+TaskQueue::~TaskQueue()
+{
+}
+
 // synchronized method
 void TaskQueue::push(ITask * task)
 {

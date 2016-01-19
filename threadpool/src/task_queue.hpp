@@ -17,8 +17,6 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/thread.hpp>
 
-#include <vector>
-
 #include "i_task.hpp"
 
 /**
@@ -32,9 +30,6 @@
  */
 class TaskQueue : private boost::noncopyable
 {
-    // Singleton
-    static TaskQueue * s_instance;
-
 public:
     /**
      * Singleton instance method.
@@ -63,12 +58,14 @@ public:
     ITask & pop(void);
 
 private:
-    TaskQueue(){};
-    ~TaskQueue(){};
+    TaskQueue();
+    ~TaskQueue();
 
     boost::ptr_vector<ITask> m_tasks;
     boost::mutex m_mutex;
     boost::condition_variable m_condition;
+    // Singleton
+    static TaskQueue * s_instance;
 };
 
 #endif /* THREADPOOL_TASK_QUEUE_HPP_ */
