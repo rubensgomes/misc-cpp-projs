@@ -10,18 +10,15 @@
  * Date:  Jan 16, 2016
  * ********************************************************
  */
-#ifndef TASK_THREAD_HPP_
-#define TASK_THREAD_HPP_
+#ifndef THREADPOOL_TASK_THREAD_HPP_
+#define THREADPOOL_TASK_THREAD_HPP_
 
 #include <boost/thread.hpp>
 
-// Forward Declaration
-class ThreadPool;
-
 /**
- * This class is a Callable object that is meant to be
- * passed as a calleable function when launching a
- * a new thread inside the thread pool.
+ * This class is a Callable object that is
+ * meant to be passed as a calleable function when
+ * launching a new thread inside the thread pool.
  *
  * @author Rubens Gomes
  */
@@ -52,7 +49,8 @@ public:
     void operator()();
 
     /**
-     * Sets a flag to prevent this task thread from running.
+     * Sets a flag to prevent this task thread from
+     * running.
      */
     void stopMe(void);
 
@@ -78,4 +76,4 @@ private:
 // overload << operator
 std::ostream& operator<<(std::ostream &, const TaskThread &);
 
-#endif /* TASK_THREAD_HPP_ */
+#endif /* THREADPOOL_TASK_THREAD_HPP_ */

@@ -16,10 +16,11 @@
 #include "i_task.hpp"
 
 #include "task_thread.hpp"
-#include "thread_pool.hpp"
+#include "task_queue.hpp"
 
 // overload << operator
-std::ostream& operator<<(std::ostream & strm, const TaskThread & rhs)
+std::ostream& operator<<(std::ostream & strm,
+                         const TaskThread & rhs)
 {
     return strm << "TaskThread("
                 << "stopped ["
@@ -49,24 +50,32 @@ TaskThread::~TaskThread()
     stopMe();
 }
 
-// synchronized method
 void TaskThread::operator()()
 {
-    boost::unique_lock<boost::mutex> lock(m_mutex);
+    if( m_is_stopped )
+    {
+        throw new std::runtime_error("this task thread has been stopped.");
+    }
 
-    ThreadPool * threadPool = ThreadPool::instance();
+    TaskQueue * instance = TaskQueue::instance();
 
     while ( ! m_is_stopped )
     {
       // following call blocks on a wait until a task
       // is available.
-      ITask & task = threadPool->popTask();
+      ITask & task = instance->pop();
       task.run();
 
       // notifies its task listener after run is done
-      ITaskDoneListener & task_done_listener = task->getNotifier();
-      task_done_listener.notifyTaskDone();
+      ITaskDoneListener & listener = task.getNotifier();
+      listener.notifyTaskDone();
     }
+
+    if( m_is_stopped )
+    {
+        throw new std::runtime_error("this task thread was stopped.");
+    }
+
 }
 
 // synchronized method

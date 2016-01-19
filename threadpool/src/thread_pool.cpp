@@ -18,19 +18,21 @@
 #include <sstream>
 
 #include "thread_pool.hpp"
+#include "task_queue.hpp"
 
-// singleton static instance
-ThreadPool* ThreadPool::s_instance = NULL;
+// *static* singleton instance
+ThreadPool * ThreadPool::s_instance = NULL;
 
-// singleton instance method
-ThreadPool* ThreadPool::instance()
+// *static* singleton instance method
+ThreadPool * ThreadPool::instance()
 {
-    if(s_instance == NULL)
+    if(ThreadPool::s_instance == NULL)
     {
-        s_instance = new ThreadPool(THREAD_POOL_SIZE);
+        ThreadPool::s_instance =
+                new ThreadPool(THREAD_POOL_SIZE);
     }
 
-    return s_instance;
+    return ThreadPool::s_instance;
 }
 
 ThreadPool::ThreadPool()
@@ -84,7 +86,8 @@ void ThreadPool::shutdown(void)
 
     if(m_is_shutdown)
     {
-        throw new std::runtime_error("thread pool has already been shutdown.");
+        throw new std::runtime_error(
+                "thread pool has already been shutdown.");
     }
 
     BOOST_LOG_TRIVIAL(trace) << "stopping all threads...";
@@ -99,47 +102,27 @@ void ThreadPool::shutdown(void)
     BOOST_LOG_TRIVIAL(trace) << "all threads have stopped.";
 }
 
-// synchronized method
 void ThreadPool::pushTask(ITask * task)
 {
-    boost::unique_lock<boost::mutex> lock(m_mutex);
-
     if(m_is_shutdown)
     {
-        throw new std::runtime_error("thread pool has been shutdown.");
+        throw new std::runtime_error(
+                "thread pool has been shutdown.");
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "pushing task to queue";
-    m_tasks.push_back(task);
-    m_condition.notify_all();
+    TaskQueue * instance = TaskQueue::instance();
+    instance->push(task);
 }
 
-// synchronized method
 ITask & ThreadPool::popTask(void)
 {
-    boost::unique_lock<boost::mutex> lock(m_mutex);
-
     if(m_is_shutdown)
     {
-        throw new std::runtime_error("thread pool has been shutdown.");
+        throw new std::runtime_error(
+                "thread pool has been shutdown.");
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "checking if task queue is empty";
-    while(m_tasks.empty())
-    {
-        // Notice that the lock is passed to wait: wait
-        // will atomically add the thread to the set of
-        // threads waiting on the condition variable,
-        // and unlock the m_mutex. When the thread is woken,
-        // the m_mutex will be locked again before the call
-        // to wait returns. This allows other threads to
-        // acquire the m_mutex in order to update the
-        // shared data, and ensures that the data associated
-        // with the condition is correctly synchronized.
-        m_condition.wait(lock);
-    }
-
-    BOOST_LOG_TRIVIAL(trace) << "popping task from queue";
-    ITask & task = m_tasks.front();
+    TaskQueue * instance = TaskQueue::instance();
+    ITask & task = instance->pop();
     return task;
 }

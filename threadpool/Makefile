@@ -16,7 +16,7 @@ RM = rm
 SHELL = /bin/sh
 
 CXXFLAGS = -static -std=c++11 -g -Wall -Wextra  -pedantic \
-  $(INCLUDES) $(LDIR)
+  $(DEFS) $(INCLUDES) $(LDIR)
 
 # boost must be installed in following path
 BOOSTDIR = /usr/local/boost_1_60_0
@@ -26,6 +26,10 @@ LDIR = \
 SRCDIR = src
 TESTDIR = test
 
+DEFS = \
+  -DBOOST_THREAD_POSIX \
+  -DBOOST_THREAD_USE_LIB
+
 INCLUDES = \
   -I. \
   -I$(SRCDIR) \
@@ -33,7 +37,12 @@ INCLUDES = \
 
 LIBS = \
   -lboost_thread \
-  -lboost_system 
+  -lboost_system \
+  -lboost_log \
+  -lboost_log_setup \
+  -lboost_date_time \
+  -lboost_filesystem \
+  -lrt
 
 MYSRCS = $(wildcard $(SRCDIR)/*.cpp) 
 TESTSRCS = $(wildcard $(TESTDIR)/*.cpp) 
@@ -47,7 +56,7 @@ OBJS = \
 TARGET = $(BUILDDIR)/test
 
 $(OBJS): $(SRCS)
-	$(CXX) $(CXXFLAGS) $< -o $@ $(LIBS) 
+	$(CXX) -c $(CXXFLAGS) $< -o $@ $(LIBS) 
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS) $(LIBS)

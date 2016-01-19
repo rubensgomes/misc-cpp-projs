@@ -14,15 +14,12 @@
 #define THREADPOOL_THREAD_POOL_HPP_
 
 #include <boost/noncopyable.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/thread.hpp>
 
 #include <vector>
 
 #include "i_task.hpp"
 #include "task_thread.hpp"
-
-class TaskThread;
 
 // default number of threads created in the thread pool
 // TODO: move this constant to a properties file
@@ -67,18 +64,17 @@ public:
     static ThreadPool * instance();
 
     /**
-     * Add a task to the task FIFO queue to be executed
-     * by a free thread in the thread pool.
+     * Delegates to the TaskQueue to add a
+     * task to the task FIFO queue.  This task will
+     * be executed by a free thread in the thread pool.
      *
      * @param a task to be run by a thread in the pool.
      */
     void pushTask(ITask *);
 
     /**
-     * A task thread makes a call to this function to
-     * extract a task to be run. If there are no tasks
-     * to run, the current running thread is placed on
-     * "wait"and is "woken up" once a task is added to the queue.
+     * Delegates to TaskQueue to pop a task to be
+     * executed by an task thread in the thread pool.
      *
      * @return pops out the next task in the FIFO queue
      * to be executed by a task thread.
@@ -114,7 +110,6 @@ private:
     bool operator==(const ThreadPool &) const;
     bool operator!=(const ThreadPool &) const;
 
-    boost::ptr_vector<ITask> m_tasks;
     std::vector<TaskThread> m_task_threads;
 
     const int m_total_threads;
