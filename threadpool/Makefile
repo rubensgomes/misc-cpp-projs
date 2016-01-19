@@ -50,7 +50,7 @@ TESTSRCS = $(wildcard $(TESTDIR)/*.cpp)
 SRCS = $(MYSRCS) $(TESTSRCS)
 
 OBJS = \
-  $(patsubst $(SRCDIR)/%.cpp,$(BUILDDIR)/%.o,$(SRCS)) \
+  $(patsubst $(SRCDIR)/%.cpp,$(BUILDDIR)/%.o,$(MYSRCS)) \
   $(patsubst $(TESTDIR)/%.cpp,$(BUILDDIR)/%.o,$(TESTSRCS))
 
 TARGET = $(BUILDDIR)/test
