@@ -34,6 +34,7 @@ TaskThread::TaskThread()
 {
     m_is_stopped = false;
     m_thread_id = Utility::getRunningThreadId();
+
     BOOST_LOG_TRIVIAL(trace) << "TaskThread ["
                              <<  this
                              << "] with thread id ["
@@ -61,6 +62,7 @@ TaskThread::TaskThread(const TaskThread & rhs)
 // dtor
 TaskThread::~TaskThread()
 {
+    stopMe();
     BOOST_LOG_TRIVIAL(trace) << "TaskThread ["
                              << this
                              << "] with thread id ["
@@ -68,16 +70,20 @@ TaskThread::~TaskThread()
                              << "] destructed";
 }
 
+// synchronized
 void TaskThread::operator()(void)
 {
+    m_mutex.lock();
+
     // Since this operator () callable function gets
     // immediatelly invoked by the newly created launching
     // thread, the following id is this actual running task
     // thread
     std::string thread_id = Utility::getRunningThreadId();
     m_thread_id = thread_id;
+
     BOOST_LOG_TRIVIAL(trace) << "task thread id [" + thread_id +
-            "] found inside operator()() function...";
+            "] inside operator()() ...";
 
     if( m_is_stopped )
     {
@@ -88,41 +94,88 @@ void TaskThread::operator()(void)
 
     TaskQueue * task_queue = TaskQueue::instance();
 
+    // never ending loop
     while ( ! m_is_stopped )
     {
-      // following call blocks on a wait until a task
-      // is available.
-      BOOST_LOG_TRIVIAL(trace) << "task thread id [" + thread_id +
-              "] pulling task from the queue...";
-      ITask & task = task_queue->pop();
-      BOOST_LOG_TRIVIAL(trace) << "task thread id [" + thread_id + "] is running";
-      task.run();
+      BOOST_LOG_TRIVIAL(trace) << "task thread id ["
+                               << thread_id
+                               << "] pulling task from the queue...";
 
-      BOOST_LOG_TRIVIAL(trace) << "task thread id [" + thread_id +
-              "] is done";
-      // notifies its task listener after run is done
-      ITaskDoneListener & listener = task.getNotifier();
-      listener.notifyTaskDone();
-      BOOST_LOG_TRIVIAL(trace) << "task thread id [" + thread_id +
-              "] notified its listener";
+      try
+      {
+          // following call blocks on a wait until a task
+          // is available.
+          ITask & task = task_queue->pop();
+
+          BOOST_LOG_TRIVIAL(trace) << "task thread id ["
+                                   << thread_id
+                                   << "] running task id ["
+                                   << task.getId()
+                                   << "]";
+
+          task.run();
+
+          BOOST_LOG_TRIVIAL(trace) << "task with id ["
+                                   << task.getId()
+                                   << "] is done";
+
+          // notifies its task listener when task is done
+          ITaskDoneListener & listener = task.getNotifier();
+          listener.notifyTaskDone();
+
+          BOOST_LOG_TRIVIAL(trace) << "task id ["
+                                   << task.getId()
+                                   << "] notified its listener";
+
+      }
+      catch(const boost::thread_interrupted & )
+      {
+          m_mutex.unlock();
+
+          BOOST_LOG_TRIVIAL(info) << "task thread id ["
+                                   << thread_id
+                                   << "] interrupted.";
+          stopMe();
+      }
+      catch(const boost::thread_resource_error &)
+      {
+          m_mutex.unlock();
+
+          BOOST_LOG_TRIVIAL(error) << "thread with id [ "
+                                   << m_thread_id
+                                   << "] failed due to resource error";
+      }
+      catch(...)
+      {
+          m_mutex.unlock();
+
+          BOOST_LOG_TRIVIAL(error) << "thread with id [ "
+                                   << m_thread_id
+                                   << "] failed due to an error";
+      }
     }
 
-    if( m_is_stopped )
-    {
-        throw new std::runtime_error("task thread id [" +
-                thread_id + "] was stopped.");
-    }
-
+    m_mutex.unlock();
 }
 
 // synchronized method
 void TaskThread::stopMe(void)
 {
-    boost::unique_lock<boost::mutex> lock(m_mutex);
+    if (m_is_stopped)
+    {
+        BOOST_LOG_TRIVIAL(trace) << "task thread id ["
+                                 << getThreadId()
+                                 << "] has already been stopped.";
+        return;
+    }
+
     BOOST_LOG_TRIVIAL(trace) << "task thread id ["
                              << getThreadId()
                              << "] is being stopped.";
+
+    m_mutex.lock();
     m_is_stopped = true;
+    m_mutex.unlock();
 }
 
 bool TaskThread::isStopped(void) const

@@ -14,6 +14,7 @@
 #define THREADPOOL_THREAD_POOL_HPP_
 
 #include <boost/noncopyable.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/thread.hpp>
 
 #include <vector>
@@ -21,9 +22,11 @@
 #include "i_task.hpp"
 #include "task_thread.hpp"
 
-// default number of threads created in the thread pool
 // TODO: move to a properties file
+// default number of threads created in the thread pool
 const int THREAD_POOL_SIZE = 2;
+// time to wait for threads in pool to shutdown
+const int SHUTDOWN_WAIT_TIME = 3000; // msecs
 
 /**
  * This class implements the Thread Pool Pattern.
@@ -107,12 +110,14 @@ private:
     bool operator==(const ThreadPool &) const;
     bool operator!=(const ThreadPool &) const;
 
-    std::vector<TaskThread> m_task_threads;
-
     const int m_total_threads;
     bool m_is_shutdown;
 
+    // places threads in both thread group
+    // and ptr container
     boost::thread_group m_thread_group;
+    boost::ptr_vector<boost::thread> m_threads;
+
     boost::mutex m_mutex;
     boost::condition_variable m_condition;
     // Singleton

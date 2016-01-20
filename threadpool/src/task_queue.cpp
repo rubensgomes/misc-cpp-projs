@@ -53,8 +53,9 @@ void TaskQueue::push(ITask * task)
     boost::unique_lock<boost::mutex> lock(m_mutex);
 
     std::string thread_id = Utility::getRunningThreadId();
-    BOOST_LOG_TRIVIAL(trace) << "thread [" + thread_id +
+    BOOST_LOG_TRIVIAL(trace) << "thread id [" + thread_id +
             "] is pushing task to queue";
+
     m_tasks.push_back(task);
     m_condition.notify_all();
 }
@@ -65,8 +66,9 @@ ITask & TaskQueue::pop(void)
     boost::unique_lock<boost::mutex> lock(m_mutex);
 
     std::string thread_id = Utility::getRunningThreadId();
-    BOOST_LOG_TRIVIAL(trace) << "thread [" + thread_id +
+    BOOST_LOG_TRIVIAL(trace) << "thread id [" + thread_id +
             "] checking if queue is empty";
+
     while(m_tasks.empty())
     {
         // Notice that the lock is passed to wait: wait
@@ -81,10 +83,10 @@ ITask & TaskQueue::pop(void)
         m_condition.wait(lock);
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "thread [" + thread_id +
+    BOOST_LOG_TRIVIAL(trace) << "thread id [" + thread_id +
             "] popping task from queue";
+
     ITask & task = m_tasks.front();
     return task;
 }
-
 

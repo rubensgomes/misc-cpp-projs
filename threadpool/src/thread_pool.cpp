@@ -12,7 +12,9 @@
  */
 
 #include <boost/lexical_cast.hpp>
+#include <boost/foreach.hpp>
 #include <boost/log/trivial.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
 
 #include <stddef.h>
 
@@ -48,7 +50,9 @@ ThreadPool::ThreadPool()
 ThreadPool::~ThreadPool()
 {
     BOOST_LOG_TRIVIAL(trace) << "ThreadPool being destructed";
+
     shutdown();
+
     BOOST_LOG_TRIVIAL(trace) << "ThreadPool ["
                              <<  this
                              << "] destructed";
@@ -64,31 +68,30 @@ ThreadPool::ThreadPool(int total_threads)
     BOOST_LOG_TRIVIAL(trace) << "launching [" + total +
             "] task threads";
 
-    // create and save task thread in vector container.
+    boost::thread * t = NULL;
+
     for(int i=0; i<m_total_threads; i++)
     {
-        std::string indx =
-                boost::lexical_cast<std::string>(i);
+        BOOST_LOG_TRIVIAL(trace) << "creating task thread w/index ["
+                                 << i
+                                 << "]";
 
         TaskThread taskThread;
-        // std::vector push_back makes a copy of
-        // task thread prior to inserting into the vector.
-        BOOST_LOG_TRIVIAL(trace) << "task thread [" +
-                indx + "] being pushed to container";
-        m_task_threads.push_back(taskThread);
-    }
 
-    boost::thread * t = NULL;
-    for(std::vector<TaskThread>::size_type i=0;
-            i < m_task_threads.size(); i++)
-    {
+        BOOST_LOG_TRIVIAL(trace) << "launching new task thread ...";
+
         // create and launch task thread.
-        t = new boost::thread(m_task_threads[i]);
+        t = new boost::thread(taskThread);
+
         std::string id =
                 boost::lexical_cast<std::string>(t->get_id());
         BOOST_LOG_TRIVIAL(trace) << "launched thread id [" + id + "]";
+
         m_thread_group.add_thread(t);
+        m_threads.push_back(t);
     }
+    // taskThread is now destroyed, but the newly-created
+    // thread t has a copy, so this is OK
 
     BOOST_LOG_TRIVIAL(trace) << "all task threads have been launched.";
 }
@@ -99,6 +102,7 @@ int ThreadPool::getTotalThreads(void) const
             boost::lexical_cast<std::string>(m_total_threads);
     BOOST_LOG_TRIVIAL(trace) << "total threads [" +
             total + "] in pool";
+
     return m_total_threads;
 }
 
@@ -115,15 +119,42 @@ void ThreadPool::shutdown(void)
 
     BOOST_LOG_TRIVIAL(trace) << "ThreadPool shutdown started";
 
-    for(auto & taskThread : m_task_threads)
-    {
-        taskThread.stopMe();
-    }
-
     BOOST_LOG_TRIVIAL(trace) <<
             "ThreadPool sending interrupt to all threads";
+
     m_thread_group.interrupt_all();
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPool is sleeping for ["
+                             << SHUTDOWN_WAIT_TIME
+                             << "] msecs";
+
+    boost::this_thread::sleep(
+            boost::posix_time::milliseconds(SHUTDOWN_WAIT_TIME));
+
+    BOOST_FOREACH( boost::thread & t, m_threads )
+    {
+        std::string id =
+                boost::lexical_cast<std::string>(t.get_id());
+
+        BOOST_LOG_TRIVIAL (trace) << "thread id ["
+                                  << id
+                                  << "] detaching...";
+
+        t.detach();
+
+        if(m_thread_group.is_thread_in(&t))
+        {
+            BOOST_LOG_TRIVIAL (trace) << "thread id ["
+                                      << id
+                                      << "] being removed from pool.";
+
+            m_thread_group.remove_thread(&t);
+        }
+
+    }
+
     BOOST_LOG_TRIVIAL(trace) << "all threads have stopped.";
+
     m_is_shutdown = true;
 }
 

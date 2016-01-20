@@ -1,10 +1,8 @@
 # misc-cpp-projs
 
-The misc-cpp-proj is a public GIT repository where 
-[Rubens](http://www.rubens-gomes.com) keeps some personal C++
-programming projects.  The source code that is provided are 
-mainly used for demonostrations and learning purposes only.
+The misc-cpp-proj is a public GIT repository where [Rubens](http://www.rubens-gomes.com) keeps some personal C++ programming projects.  The source code that is provided are  mainly used for demonostrations and learning purposes only.
 
+This is a work in progress!
 
 ## Environment
 
@@ -14,15 +12,12 @@ Also, the Boost C++ source libraries are also installed.
 
 ## Build and Run 
 
-A simple Makefile is provided in each folder to build the 
-application.  The user should review the Makefile to ensure
-that its settings (like INCLUDE and LIB paths) are appropriately
-set for the environment.
+A simple Makefile is provided in each folder to build the application.  The user should review the Makefile to ensure that its settings (like INCLUDE and LIB paths) are appropriately set for the environment.
 
 To run a build at the Linux shell type:
 
-    make clean; make
+    make clean; make depend; make
 
-To clean your .depend file listing:
+To clean your build:
 
-    make distclean
+    make clean

@@ -28,6 +28,7 @@
 class ITask : private boost::noncopyable
 {
 public:
+    ITask();
     virtual ~ITask() {};
 
     /**
@@ -48,6 +49,18 @@ public:
      * @return the corresponding task done listener.
      */
     virtual ITaskDoneListener & getNotifier() const = 0;
+
+    /**
+     * Every task is uniquely identified by
+     * a unique id.
+     *
+     * @return my id.
+     */
+    double getId(void) const;
+
+private:
+    double m_id;
+    static double s_counter;
 };
 
 inline ITask * new_clone(const ITask & rhs)
