@@ -21,7 +21,7 @@
  *
  * @author Rubens Gomes
  */
-class ITaskDoneListener: boost::noncopyable
+class ITaskDoneListener: private boost::noncopyable
 {
 public:
     virtual ~ITaskDoneListener() {};

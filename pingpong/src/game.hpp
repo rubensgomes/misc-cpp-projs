@@ -1,9 +1,11 @@
 //=======================================================================
-// Copyright   : Copyright (C) 2016 Rubens S. Gomes 
+// Copyright (C) 2016 Rubens S. Gomes
 //=======================================================================
 
 #ifndef GAME_HPP_
 #define GAME_HPP_
+
+#include <boost/noncopyable.hpp>
 
 #include <array>
 #include <iostream>
@@ -28,18 +30,17 @@ const int NR_GAMES = 3;
  *
  * @author Rubens Gomes
  */
-class Game
+class Game : private boost::noncopyable
 {
-    static Game* sInstance; // Singleton
-
 public:
     /**
      * Singleton instance method.
      *
-     * @param dataFile a CSV file containing players information.
+     * @param dataFile a CSV file containing players
+     * information.
      * @return a singleton instance of this class.
      */
-    static Game* instance(const std::string dataFile);
+    static Game * instance(const std::string & dataFile);
 
     /**
      * Run the game, and see outputs displayed on stdout.
@@ -56,12 +57,11 @@ public:
     /**
      * @return the tournament bracket with all matches.
      */
-    const std::array<Match*, NR_GAMES>& getBracket() const;
+    const std::array<Match *, NR_GAMES> & getBracket() const;
 
 private:
-
     Game();
-    Game(const std::string dataFile);
+    Game(const std::string & dataFile);
     ~Game();
 
     // (private) ==/!= operators
@@ -92,9 +92,11 @@ private:
     double mNrGames = 0;
     std::array<Player*, NR_PLAYERS> mPlayers;
     std::array<Match*, NR_GAMES> mBracket;
+    static Game * sInstance; // Singleton
 };
 
 // overload << operator
-std::ostream& operator<<(std::ostream &strm, const Game& game);
+std::ostream& operator<<(std::ostream & strm,
+                         const Game & game);
 
 #endif /* GAME_HPP_ */

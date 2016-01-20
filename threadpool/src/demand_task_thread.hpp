@@ -19,9 +19,9 @@
 
 
 /**
- * This class is a Callable whose operator() is meant
- * to be passed as a Calleable to run from a thread
- * using the "On Demand Thread Strategy".
+ * This class creates and lauches a thread to
+ * execute the given task using the "On Demand
+ * Thread Strategy".
  *
  * @author Rubens Gomes
  */
@@ -32,7 +32,7 @@ public:
      * Constructor
      *
      * @param task that contains code to be executed by
-     * the calling thread.
+     * the thread.
      */
     OnDemandTaskThread(const ITask &);
 
@@ -42,25 +42,14 @@ public:
     virtual ~OnDemandTaskThread();
 
     /**
-     * This method implements the code that is to be
-     * executed by the calling a thread.
-     *
-     * Internally it calls the ITask run() method.
+     * A callable that contains the code to be
+     * executed by the thread.  Internally it delegates to
+     * the ITask run() method.
      */
     void operator()();
 
-    /**
-     * This method sets a flag in the object to prevent
-     * the thread from running.  This method uses
-     * synchronization to ensure the instance stop flag
-     * is changed as an atomic operation.
-     */
-    void stopMe();
-
 private:
     const ITask & m_task;
-    bool m_stop_me;
-    boost::mutex m_mutex;
 };
 
 #endif /* THREADPOOL_DEMAND_TASK_THREAD_HPP_ */

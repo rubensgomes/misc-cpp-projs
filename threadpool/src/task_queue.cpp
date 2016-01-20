@@ -15,6 +15,7 @@
 #include <stddef.h>
 
 #include "task_queue.hpp"
+#include "utility.hpp"
 
 // *static* singleton instance
 TaskQueue * TaskQueue::s_instance = NULL;
@@ -33,11 +34,17 @@ TaskQueue * TaskQueue::instance()
 // private ctor
 TaskQueue::TaskQueue()
 {
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue ["
+                             << this
+                             << "] singleton constructed";
 }
 
 // private dtor
 TaskQueue::~TaskQueue()
 {
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue ["
+                             <<  this
+                             << "] singleton destructed";
 }
 
 // synchronized method
@@ -45,7 +52,9 @@ void TaskQueue::push(ITask * task)
 {
     boost::unique_lock<boost::mutex> lock(m_mutex);
 
-    BOOST_LOG_TRIVIAL(trace) << "pushing task to queue";
+    std::string thread_id = Utility::getRunningThreadId();
+    BOOST_LOG_TRIVIAL(trace) << "thread [" + thread_id +
+            "] is pushing task to queue";
     m_tasks.push_back(task);
     m_condition.notify_all();
 }
@@ -55,7 +64,9 @@ ITask & TaskQueue::pop(void)
 {
     boost::unique_lock<boost::mutex> lock(m_mutex);
 
-    BOOST_LOG_TRIVIAL(trace) << "checking if queue is empty";
+    std::string thread_id = Utility::getRunningThreadId();
+    BOOST_LOG_TRIVIAL(trace) << "thread [" + thread_id +
+            "] checking if queue is empty";
     while(m_tasks.empty())
     {
         // Notice that the lock is passed to wait: wait
@@ -70,7 +81,8 @@ ITask & TaskQueue::pop(void)
         m_condition.wait(lock);
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "popping task from queue";
+    BOOST_LOG_TRIVIAL(trace) << "thread [" + thread_id +
+            "] popping task from queue";
     ITask & task = m_tasks.front();
     return task;
 }

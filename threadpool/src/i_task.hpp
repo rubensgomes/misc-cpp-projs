@@ -17,7 +17,6 @@
 
 #include "i_task_done_listener.hpp"
 
-
 /**
  * A Task contains the code that is to be run from
  * withina separate thread.  Once the task is done
@@ -26,11 +25,17 @@
  *
  * @author Rubens Gomes
  */
-class ITask: boost::noncopyable
+class ITask : private boost::noncopyable
 {
 public:
     virtual ~ITask() {};
 
+    /**
+     * This method is required by boost::ptr_vector<ITask>
+     * when used as a container for ITask pointers.
+     *
+     * @return a clone instance.
+     */
     virtual ITask * clone() const = 0;
 
     /**
@@ -45,7 +50,7 @@ public:
     virtual ITaskDoneListener & getNotifier() const = 0;
 };
 
-inline ITask * new_clone(ITask const & rhs)
+inline ITask * new_clone(const ITask & rhs)
 {
   return rhs.clone();
 }

@@ -46,7 +46,7 @@ public:
      * Callable method to be executed by the launching
      * thread in the thread pool.
      */
-    void operator()();
+    void operator()(void);
 
     /**
      * Sets a flag to prevent this task thread from
@@ -59,6 +59,11 @@ public:
      */
     bool isStopped(void) const;
 
+    /**
+     * @return my own task thread id
+     */
+    std::string getThreadId(void) const;
+
 private:
     /**
      * Copy Assignment operator must be made private
@@ -69,6 +74,7 @@ private:
      */
     TaskThread & operator = (const TaskThread &);
 
+    std::string m_thread_id;
     bool m_is_stopped;
     boost::mutex m_mutex;
 };

@@ -22,8 +22,8 @@
 #include "task_thread.hpp"
 
 // default number of threads created in the thread pool
-// TODO: move this constant to a properties file
-const int THREAD_POOL_SIZE = 10;
+// TODO: move to a properties file
+const int THREAD_POOL_SIZE = 2;
 
 /**
  * This class implements the Thread Pool Pattern.
