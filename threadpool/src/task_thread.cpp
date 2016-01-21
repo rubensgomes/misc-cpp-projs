@@ -31,10 +31,10 @@ std::ostream& operator<<(std::ostream & strm,
 
 // ctor
 TaskThread::TaskThread()
+: m_thread_id(Utility::getRunningThreadId()),
+  m_is_stopped(false),
+  m_mutex()
 {
-    m_is_stopped = false;
-    m_thread_id = Utility::getRunningThreadId();
-
     BOOST_LOG_TRIVIAL(trace) << "TaskThread ["
                              <<  this
                              << "] with thread id ["
@@ -44,9 +44,9 @@ TaskThread::TaskThread()
 
 // copy ctor
 TaskThread::TaskThread(const TaskThread & rhs)
-:m_is_stopped(rhs.m_is_stopped),
- m_mutex(),
- m_thread_id(rhs.m_thread_id)
+:m_thread_id(rhs.m_thread_id),
+ m_is_stopped(rhs.m_is_stopped),
+ m_mutex()
 {
     // Notice that the m_mutex is not copyable
     // Therefore a new m_mutex should be used.
