@@ -18,6 +18,3 @@ To run a build at the Linux shell type:
 
     make clean; make
 
-To clean your .depend file listing:
-
-    make distclean

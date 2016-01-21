@@ -44,7 +44,8 @@ CXX_FLAGS = -c -g -Wall -Wextra -pedantic -std=c++11  \
   $(DEFS) $(INCLUDES) $(CYGWIN_FLAGS)
 
 # linking flags
-LD_FLAGS = -static
+#LD_FLAGS = -static
+LD_FLAGS = -shared
 
 # linking libs search paths
 LIB_DIRS = \
