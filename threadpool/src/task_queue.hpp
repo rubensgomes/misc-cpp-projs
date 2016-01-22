@@ -20,11 +20,13 @@
 #include "i_task.hpp"
 
 /**
- * A place holder to manage tasks to be run by the
- * corresponding task thread in the thread pool.
+ * A place holder to manage tasks to be
+ * run by the corresponding task thread in
+ * the thread pool.
  *
- * NOTE: This class was created to fix circular
- * dependency between TaskThread and ThreadPool.
+ * NOTE: This class was created to fix a
+ * circular dependency that existed between
+ * TaskThread and ThreadPool.
  *
  * @author Rubens Gomes
  */
