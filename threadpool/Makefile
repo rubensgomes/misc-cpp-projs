@@ -37,6 +37,7 @@ CYGWIN_FLAGS = -U__STRICT_ANSI__
 # preprocessor header files search paths
 INCLUDES = \
   -I$(CURDIR)/src \
+  -I$(CURDIR)/test \
   -I$(BOOST_DIR)
 
 # compiling flags
@@ -44,8 +45,7 @@ CXX_FLAGS = -c -g -Wall -Wextra -pedantic -std=c++11  \
   $(DEFS) $(INCLUDES) $(CYGWIN_FLAGS)
 
 # linking flags
-#LD_FLAGS = -static
-LD_FLAGS = -shared
+LD_FLAGS = -static
 
 # linking libs search paths
 LIB_DIRS = \

@@ -17,9 +17,12 @@
 
 #include "i_task.hpp"
 
+// TODO: move to a properties file
+// time to wait for thread to stop
+const int STOP_WAIT_TIME = 3000; // msecs
 
 /**
- * This class creates and lauches a thread to
+ * This class creates and launches a thread to
  * execute the given task using the "On Demand
  * Thread Strategy".
  *
@@ -31,10 +34,18 @@ public:
     /**
      * Constructor
      *
-     * @param task that contains code to be executed by
-     * the thread.
+     * @param task that to be executed by the thread.
      */
     OnDemandTaskThread(const ITask &);
+
+    /**
+     * Copy constructor.  The copy constructor is required
+     * because the newly created thread will need to make
+     * a copy of this object.
+     *
+     * @param the task thread to be copied.
+     */
+    OnDemandTaskThread(const OnDemandTaskThread &);
 
     /**
      * Destructor.
@@ -43,13 +54,32 @@ public:
 
     /**
      * A callable that contains the code to be
-     * executed by the thread.  Internally it delegates to
-     * the ITask run() method.
+     * executed by the thread.  Internally it
+     * delegates to the ITask run() method, and it
+     * notifies any task listener when task is done.
      */
-    void operator()();
+    void operator()(void);
+
+    /**
+     * Nicely stops the running thread.
+     */
+    void stopMe(void);
 
 private:
+    // following operators are not used in this class
+    bool operator==(const OnDemandTaskThread &) const;
+    bool operator!=(const OnDemandTaskThread &) const;
+
     const ITask & m_task;
+
+    // Even though ony one thread is created, I
+    // am placing the thread in a thread group
+    // to make it easier to manage that thread.
+    boost::thread_group m_thread_group;
+    boost::thread * m_thread;
+    std::string m_thread_id;
+    bool m_is_stopped;
+    boost::mutex m_mutex;
 };
 
 #endif /* THREADPOOL_DEMAND_TASK_THREAD_HPP_ */

@@ -15,6 +15,8 @@
 #include <boost/test/included/unit_test.hpp> 
 
 #include "thread_pool.hpp"
+#include "hello_task.hpp"
+#include "demand_task_thread.hpp"
 
 /**
  * Test Suite for the C++ Thread Pool classes
@@ -25,9 +27,14 @@ BOOST_AUTO_TEST_CASE(threadpool_first_test)
 {
     ThreadPool * pool = ThreadPool::instance();
     int nr_threads = pool->getTotalThreads();
-
     BOOST_TEST(nr_threads);
     BOOST_TEST(nr_threads == THREAD_POOL_SIZE);
-
     pool->shutdown();
+}
+
+BOOST_AUTO_TEST_CASE(demandthread_first_test)
+{
+    HelloTask task;
+    OnDemandTaskThread thread(task);
+    thread.stopMe();
 }

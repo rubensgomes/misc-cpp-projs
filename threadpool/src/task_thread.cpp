@@ -13,10 +13,11 @@
 #include <boost/log/trivial.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "i_task_done_listener.hpp"
 #include "i_task.hpp"
 
 #include "task_thread.hpp"
+
+#include "i_task_listener.hpp"
 #include "task_queue.hpp"
 #include "utility.hpp"
 
@@ -118,14 +119,6 @@ void TaskThread::operator()(void)
           BOOST_LOG_TRIVIAL(trace) << "task with id ["
                                    << task.getId()
                                    << "] is done";
-
-          // notifies its task listener when task is done
-          ITaskDoneListener & listener = task.getNotifier();
-          listener.notifyTaskDone();
-
-          BOOST_LOG_TRIVIAL(trace) << "task id ["
-                                   << task.getId()
-                                   << "] notified its listener";
 
       }
       catch(const boost::thread_interrupted & )

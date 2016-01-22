@@ -24,7 +24,7 @@
 
 // TODO: move to a properties file
 // default number of threads created in the thread pool
-const int THREAD_POOL_SIZE = 2;
+const int THREAD_POOL_SIZE = 10;
 // time to wait for threads in pool to shutdown
 const int SHUTDOWN_WAIT_TIME = 3000; // msecs
 

@@ -128,6 +128,8 @@ void ThreadPool::shutdown(void)
                              << SHUTDOWN_WAIT_TIME
                              << "] msecs";
 
+    // sleep this thread to give chance for the other
+    // running thread to stop.
     boost::this_thread::sleep(
             boost::posix_time::milliseconds(SHUTDOWN_WAIT_TIME));
 

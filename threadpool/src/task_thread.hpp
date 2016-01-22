@@ -31,9 +31,11 @@ public:
     TaskThread();
 
     /**
-     * Copy constructor
+     * Copy constructor.  The copy constructor is required
+     * because the newly created thread will need to make
+     * a copy of this object.
      *
-     * @param the task thread to be cloned.
+     * @param the task thread to be copied.
      */
     TaskThread(const TaskThread &);
 
