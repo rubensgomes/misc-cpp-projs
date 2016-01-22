@@ -23,11 +23,12 @@ std::string Utility::getRunningThreadId(void)
     return id;
 }
 
-
+// ctor
 Utility::Utility()
 {
 }
 
+// dtor
 Utility::~Utility()
 {
 }

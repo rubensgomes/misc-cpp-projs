@@ -16,7 +16,7 @@
 #include <boost/noncopyable.hpp>
 
 /**
- * A Utility class.
+ * A Utility class used by the thread classes.
  *
  * @author Rubens Gomes
  */
