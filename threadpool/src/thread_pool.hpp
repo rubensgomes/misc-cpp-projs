@@ -73,15 +73,6 @@ public:
     void pushTask(ITask *);
 
     /**
-     * Delegates to TaskQueue to pop a task to be
-     * executed by an task thread in the thread pool.
-     *
-     * @return pops out the next task in the FIFO queue
-     * to be executed by a task thread.
-     */
-    ITask & popTask(void);
-
-    /**
      * @return the total number of threads in the pool.
      */
     int getTotalThreads(void) const;

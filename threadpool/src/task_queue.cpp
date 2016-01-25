@@ -57,7 +57,11 @@ void TaskQueue::push(ITask * task)
             "] is pushing task to queue";
 
     m_tasks.push_back(task);
-    m_condition.notify_all();
+
+    // only at most *ONE* single thread can execute a
+    // given task at a time.  We therefore only need
+    // to nofiy *ONE* of the threads waiting.
+    m_condition.notify_one();
 }
 
 // synchronized method

@@ -171,16 +171,3 @@ void ThreadPool::pushTask(ITask * task)
     TaskQueue * task_queue = TaskQueue::instance();
     task_queue->push(task);
 }
-
-ITask & ThreadPool::popTask(void)
-{
-    if(m_is_shutdown)
-    {
-        throw new std::runtime_error(
-                "thread pool has been shutdown.");
-    }
-
-    TaskQueue * task_queue= TaskQueue::instance();
-    ITask & task = task_queue->pop();
-    return task;
-}
