@@ -20,19 +20,23 @@ BOOST_DIR = /usr/local/boost_1_60_0
 
 # dependency settings
 DEP_DIR = .depend
-$(shell $(MDIR) -p $(DEP_DIR) >/dev/null)
-$(shell $(MDIR) -p $(DEP_DIR)/src >/dev/null)
-$(shell $(MDIR) -p $(DEP_DIR)/test >/dev/null)
+$(shell $(MDIR) -p $(DEP_DIR))
+$(shell $(MDIR) -p $(DEP_DIR)/src)
+$(shell $(MDIR) -p $(DEP_DIR)/test)
 DEP_FLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.Td
 POSTCOMPILE = $(MV) -f $(DEP_DIR)/$*.Td $(DEP_DIR)/$*.d
 
 # preprocessor macro definitions
+# BOOST_LOG_DYN_LINK to fix linking issues using boost log
 DEFS = \
   -DBOOST_THREAD_POSIX \
-  -DBOOST_THREAD_USE_LIB
+  -DBOOST_THREAD_USE_LIB \
+  -DBOOST_LOG_DYN_LINK
 
-# cygwin flags to fix compiling issues
-CYGWIN_FLAGS = -U__STRICT_ANSI__
+# cancel definitioin of following names to fix
+# compiling issue in cygwin
+UNDEFS = \
+  -U__STRICT_ANSI__
 
 # preprocessor header files search paths
 INCLUDES = \
@@ -41,22 +45,26 @@ INCLUDES = \
   -I$(BOOST_DIR)
 
 # compiling flags
-CXX_FLAGS = -c -g -Wall -Wextra -pedantic -std=c++11  \
-  $(DEFS) $(INCLUDES) $(CYGWIN_FLAGS)
+CXX_FLAGS = \
+  -c -g -Wall -Wextra -pedantic -std=c++11 \
+  $(DEFS) $(UNDEFS) $(INCLUDES) 
 
 # linking flags
-LD_FLAGS = -static
+# BOOST_LOG_DYN_LINK to fix linking issues using boost log
+LD_FLAGS = \
+  -static \
+  -DBOOST_LOG_DYN_LINK
 
 # linking libs search paths
 LIB_DIRS = \
   -L$(BOOST_DIR)/stage/lib
 
 # linking libs to search
+#  -lboost_log_setup \
 LIBS = \
   -lboost_thread \
   -lboost_system \
   -lboost_log \
-  -lboost_log_setup \
   -lboost_date_time \
   -lboost_filesystem \
   -lrt
@@ -82,7 +90,7 @@ TARGET = pooltest
 $(TARGET): $(OBJS)
 	$(CXX) $(LD_FLAGS) $(LIB_DIRS) -o $(TARGET) $(OBJS) $(LIBS)
 
-# delete this rule, and use the following instead
+# compiling rule
 %.o: %.cpp
 	$(CXX) $(DEP_FLAGS) $(CXX_FLAGS) -o $@ $<  
 	$(POSTCOMPILE)
