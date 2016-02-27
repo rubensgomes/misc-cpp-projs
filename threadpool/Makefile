@@ -27,11 +27,9 @@ DEP_FLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.Td
 POSTCOMPILE = $(MV) -f $(DEP_DIR)/$*.Td $(DEP_DIR)/$*.d
 
 # preprocessor macro definitions
-# BOOST_LOG_DYN_LINK to fix linking issues using boost log
+# BOOST_ALL_DYN_LINK to dynamic link to the Boost libraries
 DEFS = \
-  -DBOOST_THREAD_POSIX \
-  -DBOOST_THREAD_USE_LIB \
-  -DBOOST_LOG_DYN_LINK
+  -DBOOST_ALL_DYN_LINK 
 
 # cancel definitioin of following names to fix
 # compiling issue in cygwin
@@ -45,29 +43,23 @@ INCLUDES = \
   -I$(BOOST_DIR)
 
 # compiling flags
+# -Wextra -pedantic 
 CXX_FLAGS = \
-  -c -g -Wall -Wextra -pedantic -std=c++11 \
+  -c -g -Wall -std=c++11 \
   $(DEFS) $(UNDEFS) $(INCLUDES) 
 
 # linking flags
-# BOOST_LOG_DYN_LINK to fix linking issues using boost log
 LD_FLAGS = \
-  -static \
-  -DBOOST_LOG_DYN_LINK
 
 # linking libs search paths
 LIB_DIRS = \
   -L$(BOOST_DIR)/stage/lib
 
 # linking libs to search
-#  -lboost_log_setup \
 LIBS = \
-  -lboost_thread \
   -lboost_system \
-  -lboost_log \
-  -lboost_date_time \
-  -lboost_filesystem \
-  -lrt
+  -lboost_thread \
+  -lboost_log 
 
 # C++ project source code folder
 CXX_SRCDIR = src
