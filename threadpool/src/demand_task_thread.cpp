@@ -18,28 +18,23 @@
 // ctor
 OnDemandTaskThread::OnDemandTaskThread(const ITask & task)
 : m_task(task),
-  m_is_stopped(false)
+  m_is_stopped( false )
 {
     BOOST_LOG_TRIVIAL(trace) << "Demnad thread ["
                              << this
                              << "] constructed.";
 
-    // create / launch and store thread in group.
-    m_thread = new boost::thread(*this);
-    m_thread_group.add_thread(m_thread);
+    // create / launch thread.
+    new boost::thread(*this);
 }
 
 // copy ctor
 OnDemandTaskThread::OnDemandTaskThread(const OnDemandTaskThread & rhs)
 :m_task(rhs.m_task),
- m_thread_group(),
- m_thread(),
- m_thread_id(rhs.m_thread_id),
  m_is_stopped(rhs.m_is_stopped),
  m_mutex()
 {
-    // Notice that the m_thread, m_thread_group and
-    // m_mutex are not copyable.
+    // Notice that m_mutex is not copyable.
 
     BOOST_LOG_TRIVIAL(trace) << "Thread ["
                              <<  this
@@ -60,7 +55,7 @@ void OnDemandTaskThread::operator ()(void)
     if( m_is_stopped )
     {
         throw new std::runtime_error(
-                "thread has been stopped.");
+                "thread has already been stopped.");
     }
 
     m_mutex.lock();
@@ -70,11 +65,10 @@ void OnDemandTaskThread::operator ()(void)
     // thread, the following id is this actual running task
     // thread
     std::string thread_id = Utility::getRunningThreadId();
-    m_thread_id = thread_id;
 
     BOOST_LOG_TRIVIAL(trace) << "Demnad thread id ["
-                             << m_thread_id
-                             << "] is now running task.";
+                             << thread_id
+                             << "] is now executinga a task.";
 
     try
     {
@@ -83,7 +77,7 @@ void OnDemandTaskThread::operator ()(void)
         m_task.run();
 
         BOOST_LOG_TRIVIAL(trace) << "Task of demnad thread id ["
-                                 << m_thread_id
+                                 << thread_id
                                  << "] is now done.";
 
         m_is_stopped = true;
@@ -102,7 +96,7 @@ void OnDemandTaskThread::operator ()(void)
         m_mutex.unlock();
 
         BOOST_LOG_TRIVIAL(error) << "thread with id [ "
-                                 << m_thread_id
+                                 << thread_id
                                  << "] failed due to resource error";
     }
     catch(...)
@@ -110,7 +104,7 @@ void OnDemandTaskThread::operator ()(void)
         m_mutex.unlock();
 
         BOOST_LOG_TRIVIAL(error) << "thread with id [ "
-                                 << m_thread_id
+                                 << thread_id
                                  << "] failed due to an error";
     }
 
@@ -130,8 +124,6 @@ void OnDemandTaskThread::stopMe(void)
     BOOST_LOG_TRIVIAL(trace) <<
             "Sending interrupt to running thread";
 
-    m_thread_group.interrupt_all();
-
     BOOST_LOG_TRIVIAL(trace) << "Thread is sleeping for ["
                              << STOP_WAIT_TIME
                              << "] msecs";
@@ -140,21 +132,6 @@ void OnDemandTaskThread::stopMe(void)
     // running thread to stop.
     boost::this_thread::sleep(
             boost::posix_time::milliseconds(STOP_WAIT_TIME));
-
-    BOOST_LOG_TRIVIAL (trace) << "thread id ["
-                              << m_thread_id
-                              << "] detaching...";
-
-    m_thread->detach();
-
-    if(m_thread_group.is_thread_in(m_thread))
-    {
-        BOOST_LOG_TRIVIAL (trace) << "thread id ["
-                                  << m_thread_id
-                                  << "] being removed from thread group.";
-
-        m_thread_group.remove_thread(m_thread);
-    }
 
     BOOST_LOG_TRIVIAL(trace) << "thread has stopped.";
 

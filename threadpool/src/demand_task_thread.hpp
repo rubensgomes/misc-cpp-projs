@@ -71,13 +71,6 @@ private:
     bool operator!=(const OnDemandTaskThread &) const;
 
     const ITask & m_task;
-
-    // Even though ony one thread is created, I
-    // am placing the thread in a thread group
-    // to make it easier to manage that thread.
-    boost::thread_group m_thread_group;
-    boost::thread * m_thread;
-    std::string m_thread_id;
     bool m_is_stopped;
     boost::mutex m_mutex;
 };

@@ -26,9 +26,6 @@
 BOOST_AUTO_TEST_CASE(threadpool_first_test)
 {
     ThreadPool * pool = ThreadPool::instance();
-    int nr_threads = pool->getTotalThreads();
-    BOOST_TEST(nr_threads);
-    BOOST_TEST(nr_threads == THREAD_POOL_SIZE);
     pool->shutdown();
 }
 

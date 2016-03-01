@@ -15,6 +15,14 @@ MV = mv
 RM = rm 
 SHELL = /bin/sh
 
+# unames to identify OS
+uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+uname_M := $(shell sh -c 'uname -m 2>/dev/null || echo not')
+uname_O := $(shell sh -c 'uname -o 2>/dev/null || echo not')
+uname_R := $(shell sh -c 'uname -r 2>/dev/null || echo not')
+uname_P := $(shell sh -c 'uname -p 2>/dev/null || echo not')
+uname_V := $(shell sh -c 'uname -v 2>/dev/null || echo not')
+
 # boost must be installed in following path
 BOOST_DIR = /usr/local/boost_1_60_0
 
@@ -31,10 +39,17 @@ POSTCOMPILE = $(MV) -f $(DEP_DIR)/$*.Td $(DEP_DIR)/$*.d
 DEFS = \
   -DBOOST_ALL_DYN_LINK 
 
+ifeq ($(uname_O),Cygwin)
 # cancel definitioin of following names to fix
 # compiling issue in cygwin
+  UNDEF_NAMES = \
+    -U__STRICT_ANSI__
+else
+  UNDEF_NAMES = 
+endif
+
 UNDEFS = \
-  -U__STRICT_ANSI__
+  $(UNDEF_NAMES)
 
 # preprocessor header files search paths
 INCLUDES = \
@@ -89,7 +104,7 @@ $(TARGET): $(OBJS)
 
 # cleans build
 clean:
-	$(RM) -f $(OBJS) $(TARGET)
+	$(RM) -f $(OBJS) $(TARGET) $(TARGET).stackdump
 	$(RM) -fr $(DEP_DIR)
 
 $(DEP_DIR)/%.d: ;
