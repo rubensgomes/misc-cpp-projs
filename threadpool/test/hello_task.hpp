@@ -15,6 +15,11 @@
 
 #include "i_task.hpp"
 
+// TODO: move to a properties file
+// time to sleep running thread to provide
+// an interrupt point
+const int SLEEP_WAIT_TIME = 100; // msecs
+
 /**
  * A simple Hello World task used for testing
  * the thread code.

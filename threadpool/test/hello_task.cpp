@@ -12,6 +12,8 @@
  */
 
 #include <boost/log/trivial.hpp>
+#include <boost/thread.hpp>
+#include <boost/chrono.hpp>
 
 #include "hello_task.hpp"
 
@@ -45,7 +47,18 @@ ITask * HelloTask::clone(void) const
 void HelloTask::do_run() const
 {
     BOOST_LOG_TRIVIAL(info) << "Task ["
-                             <<  this
-                             << "] Hello World!";
+                            <<  this
+                            << "] Hello World!";
+
+    BOOST_LOG_TRIVIAL(info) << "Entering forever loop.";
+
+    while(true)
+    {
+        boost::this_thread::sleep_for(
+          boost::chrono::milliseconds{SLEEP_WAIT_TIME});
+        ;
+    }
+
+    BOOST_LOG_TRIVIAL(info) << "Leaving forever loop.";
 
 }

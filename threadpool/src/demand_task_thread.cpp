@@ -11,6 +11,7 @@
  * ********************************************************
  */
 #include <boost/log/trivial.hpp>
+#include <boost/chrono.hpp>
 
 #include "demand_task_thread.hpp"
 #include "utility.hpp"
@@ -22,19 +23,22 @@ OnDemandTaskThread::OnDemandTaskThread(const ITask & task)
 {
     BOOST_LOG_TRIVIAL(trace) << "Demnad thread ["
                              << this
-                             << "] constructed.";
+                             << "] being constructed.";
 
     // create / launch thread.
-    new boost::thread(*this);
+    BOOST_LOG_TRIVIAL(trace) << "Spawning new Demnad thread";
+
+    m_thread = new boost::thread(*this);
 }
 
 // copy ctor
 OnDemandTaskThread::OnDemandTaskThread(const OnDemandTaskThread & rhs)
 :m_task(rhs.m_task),
  m_is_stopped(rhs.m_is_stopped),
+ m_thread(),
  m_mutex()
 {
-    // Notice that m_mutex is not copyable.
+    // Notice that m_thread m_mutex are not copyable.
 
     BOOST_LOG_TRIVIAL(trace) << "Thread ["
                              <<  this
@@ -43,11 +47,18 @@ OnDemandTaskThread::OnDemandTaskThread(const OnDemandTaskThread & rhs)
 
 OnDemandTaskThread::~OnDemandTaskThread()
 {
-    stopMe();
-
     BOOST_LOG_TRIVIAL(trace) << "Demnad thread ["
                              << this
                              << "] destructed.";
+}
+
+void OnDemandTaskThread::join(void)
+{
+    if(m_thread != NULL)
+    {
+        BOOST_LOG_TRIVIAL(trace) << "joining with newly created thread ";
+        m_thread->join();
+    }
 }
 
 void OnDemandTaskThread::operator ()(void)
@@ -72,7 +83,8 @@ void OnDemandTaskThread::operator ()(void)
 
     try
     {
-        // execute the task. If this call blocks, it will
+        // execute the task. If this call blocks, and it
+        // provides an interrupt point (calling wait) it will
         // be interrupted by calling the stopMe() method.
         m_task.run();
 
@@ -89,7 +101,7 @@ void OnDemandTaskThread::operator ()(void)
         BOOST_LOG_TRIVIAL(info) << "task thread id ["
                                  << thread_id
                                  << "] interrupted.";
-        stopMe();
+        stop();
     }
     catch(const boost::thread_resource_error &)
     {
@@ -112,7 +124,23 @@ void OnDemandTaskThread::operator ()(void)
     m_mutex.unlock();
 }
 
-void OnDemandTaskThread::stopMe(void)
+void OnDemandTaskThread::sleep(int msecs)
+{
+    if(msecs <=0)
+    {
+        throw new std::runtime_error(
+                "msecs cannot be 0 or negative.");
+    }
+
+    BOOST_LOG_TRIVIAL(trace) << "sleeping for ["
+                             << msecs
+                             << "] msecs";
+
+    boost::this_thread::sleep_for(
+      boost::chrono::milliseconds{msecs});
+}
+
+void OnDemandTaskThread::stop(void)
 {
     if( m_is_stopped)
     {
@@ -121,8 +149,13 @@ void OnDemandTaskThread::stopMe(void)
 
     m_mutex.lock();
 
-    BOOST_LOG_TRIVIAL(trace) <<
-            "Sending interrupt to running thread";
+    if(m_thread != NULL)
+    {
+        BOOST_LOG_TRIVIAL(trace) <<
+                "Sending interrupt to running thread";
+
+        m_thread->interrupt();
+    }
 
     BOOST_LOG_TRIVIAL(trace) << "Thread is sleeping for ["
                              << STOP_WAIT_TIME

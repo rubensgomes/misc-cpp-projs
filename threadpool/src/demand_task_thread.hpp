@@ -61,9 +61,30 @@ public:
     void operator()(void);
 
     /**
-     * Nicely stops the running thread.
+     * Place the current running thread to sleep for the
+     * mseconds duration
+     *
+     * @param msecs a positive number of milliseconds.
      */
-    void stopMe(void);
+    void sleep(int msecs);
+
+    /**
+     * Attempts to stop the newly created / running thread
+     * by sending an interrupt signal to the new thread.
+     * The newly created running thread task MUST provide
+     * an interrupt point by calling thread wait(), for
+     * example.
+     */
+    void stop(void);
+
+    /**
+     * This is a blocking call!
+     *
+     * Join newly created thread with current thread.  This
+     * will block the current running thread, and place it
+     * in wait status until the newly created thread terminates.
+     */
+    void join(void);
 
 private:
     // following operators are not used in this class
@@ -73,6 +94,8 @@ private:
     const ITask & m_task;
     bool m_is_stopped;
     boost::mutex m_mutex;
+
+    boost::thread * m_thread;
 };
 
 #endif /* THREADPOOL_DEMAND_TASK_THREAD_HPP_ */

@@ -23,15 +23,16 @@
  *
  * @author Rubens Gomes
  */
-BOOST_AUTO_TEST_CASE(threadpool_first_test)
+/*BOOST_AUTO_TEST_CASE(threadpool_first_test)
 {
     ThreadPool * pool = ThreadPool::instance();
     pool->shutdown();
-}
+}*/
 
 BOOST_AUTO_TEST_CASE(demandthread_first_test)
 {
     HelloTask task;
     OnDemandTaskThread thread(task);
-    thread.stopMe();
+    thread.sleep(3000);
+    thread.stop();
 }

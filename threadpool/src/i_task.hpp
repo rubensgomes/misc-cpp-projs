@@ -41,7 +41,10 @@ public:
 
     /**
      * The run method should contain the code that is
-     * to be executed from a thread.
+     * to be executed from a thread.  In order for this
+     * task to be interrupted the user should provide
+     * an interrupt thread point by calling thread wait(),
+     * for example.
      */
     void run(void) const;
 
