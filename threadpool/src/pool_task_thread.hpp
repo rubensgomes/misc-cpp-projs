@@ -30,13 +30,13 @@
 class PoolTaskThread: public TaskThread
 {
 public:
-    // c-tor
+    // ctor
     PoolTaskThread();
 
-    // d-tor
+    // dtor
     virtual ~PoolTaskThread();
 
-    // copy c-tor
+    // copy ctor
     PoolTaskThread(const PoolTaskThread &);
 
     /**

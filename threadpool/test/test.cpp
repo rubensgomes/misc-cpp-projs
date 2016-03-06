@@ -29,8 +29,8 @@ BOOST_AUTO_TEST_CASE(threadpool_first_test)
             ThreadPoolManager::instance();
     Task * task = new HelloTask();
     pool->pushTask(task);
-    delete task;
     pool->shutdown();
+    delete task;
 }
 
 BOOST_AUTO_TEST_CASE(demandthread_first_test)
@@ -39,6 +39,6 @@ BOOST_AUTO_TEST_CASE(demandthread_first_test)
             ThreadOnDemandManager::instance();
     HelloTask * task = new HelloTask();
     onDemand->launchThread(task);
-    delete task;
     onDemand->shutdown();
+    delete task;
 }

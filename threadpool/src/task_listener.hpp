@@ -16,16 +16,17 @@
 #include <boost/noncopyable.hpp>
 
 /**
- * An abstract template type containing the behaviour
- * for a listener interested in knowing when its
- * task is done running.
+ * An abstract base class that defines a type
+ * containing the behaviour for a listener interested
+ * in knowing when its task is done running.
  *
  * @author Rubens Gomes
  */
 class TaskListener: private boost::noncopyable
 {
 public:
-    virtual ~TaskListener() {};
+    // dtor
+    virtual ~TaskListener() = 0;
 
     /**
      * The clone method is required by pointer
@@ -60,6 +61,9 @@ public:
      */
     bool operator!=(const TaskListener &) const;
 };
+
+inline TaskListener::~TaskListener()
+{}
 
 // We allow cloning to allow this object to be
 // stored in pointer containers.  And we need

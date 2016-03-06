@@ -29,7 +29,10 @@ public:
     static std::string getRunningThreadId(void);
 
 private:
+    // private ctor
     Utility();
+
+    // private dtor
     ~Utility();
 };
 

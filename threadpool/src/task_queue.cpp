@@ -31,7 +31,7 @@ TaskQueue * TaskQueue::instance()
     return TaskQueue::s_instance;
 }
 
-// private ctor
+// private c-tor
 TaskQueue::TaskQueue()
 {
     BOOST_LOG_TRIVIAL(trace) << "TaskQueue ["
@@ -39,7 +39,7 @@ TaskQueue::TaskQueue()
                              << "] singleton constructed";
 }
 
-// private dtor
+// private d-tor
 TaskQueue::~TaskQueue()
 {
     BOOST_LOG_TRIVIAL(trace) << "TaskQueue ["
@@ -77,7 +77,8 @@ Task & TaskQueue::pop(void)
     boost::unique_lock<boost::mutex> lock(m_mutex);
 
     std::string thread_id = Utility::getRunningThreadId();
-    BOOST_LOG_TRIVIAL(trace) << "thread id [" + thread_id +
+    BOOST_LOG_TRIVIAL(trace) << "thread id [" +
+            thread_id +
             "] checking if queue is empty";
 
     while(m_tasks.empty())

@@ -17,7 +17,7 @@
 #include "task_queue.hpp"
 #include "utility.hpp"
 
-// c-tor
+// ctor
 PoolTaskThread::PoolTaskThread()
 {
     BOOST_LOG_TRIVIAL(trace) << "PoolTaskThread ["
@@ -25,7 +25,7 @@ PoolTaskThread::PoolTaskThread()
                              << "] constructed";
 }
 
-// d-tor
+// dtor
 PoolTaskThread::~PoolTaskThread()
 {
     BOOST_LOG_TRIVIAL(trace) << "PoolTaskThread ["
@@ -33,7 +33,7 @@ PoolTaskThread::~PoolTaskThread()
                              << "] destructed";
 }
 
-// copy c-tor
+// copy ctor
 PoolTaskThread::PoolTaskThread(const PoolTaskThread & rhs)
 {
     // m_mutex cannot be copied.
@@ -84,28 +84,39 @@ void PoolTaskThread::operator()(void)
                                    << task.getId()
                                    << "] is done";
       }
-      catch(const boost::thread_interrupted & )
+      catch(const boost::thread_interrupted &)
       {
-          m_mutex.unlock();
           BOOST_LOG_TRIVIAL(info) << "task thread id ["
                                    << thread_id
                                    << "] interrupted.";
+          m_mutex.unlock();
           TaskThread::stop();
       }
       catch(const boost::thread_resource_error &)
       {
-          m_mutex.unlock();
           BOOST_LOG_TRIVIAL(error) << "thread with id [ "
                                    << thread_id
                                    << "] failed due to resource error";
+          m_mutex.unlock();
+          TaskThread::stop();
+      }
+      catch(std::exception & ex)
+      {
+          BOOST_LOG_TRIVIAL(info) << "Handling exception ["
+                                   << ex.what()
+                                   << "]";
+          BOOST_LOG_TRIVIAL(error) << "thread with id [ "
+                                   << thread_id
+                                   << "] failed due std exception";
+          m_mutex.unlock();
           TaskThread::stop();
       }
       catch(...)
       {
-          m_mutex.unlock();
           BOOST_LOG_TRIVIAL(error) << "thread with id [ "
                                    << thread_id
                                    << "] failed due to an error";
+          m_mutex.unlock();
           TaskThread::stop();
       }
     }

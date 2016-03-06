@@ -22,7 +22,7 @@ const int SHUTDOWN_WAIT_TIME = 3000; // msecs
 const int STOP_WAIT_TIME = 3000; // msecs
 
 // default number of threads created in the thread pool
-const int THREAD_POOL_SIZE = 10;
+const int THREAD_POOL_SIZE = 2;
 
 // time to sleep running thread to provide
 // an interrupt point

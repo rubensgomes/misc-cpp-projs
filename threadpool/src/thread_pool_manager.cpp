@@ -116,7 +116,7 @@ void ThreadPoolManager::shutdown(void)
 
     BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager sleeping for ["
                              << SLEEP_WAIT_TIME
-                             << "]";
+                             << "] msecs";
 
     // sleep this thread to give chance for any other
     // running thread to get started

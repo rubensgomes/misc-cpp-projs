@@ -28,10 +28,10 @@
 class Task : private boost::noncopyable
 {
 public:
-    // c-tor
+    // ctor
     Task();
 
-    // d-tor
+    // dtor
     virtual ~Task();
 
     /**

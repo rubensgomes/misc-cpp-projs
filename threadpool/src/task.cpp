@@ -37,7 +37,6 @@ Task::~Task()
                              << "] with id ["
                              << m_id
                              << "] destructed.";
-
 }
 
 void Task::run(void) const

@@ -32,7 +32,7 @@ OnDemandTaskThread::OnDemandTaskThread(Task * task)
 
 }
 
-// d-tor
+// dtor
 OnDemandTaskThread::~OnDemandTaskThread()
 {
     BOOST_LOG_TRIVIAL(trace) << "Demnad thread ["
@@ -40,7 +40,7 @@ OnDemandTaskThread::~OnDemandTaskThread()
                              << "] destructed.";
 }
 
-// copy c-tor
+// copy ctor
 OnDemandTaskThread::OnDemandTaskThread(
         const OnDemandTaskThread & rhs)
 : m_task(rhs.m_task)

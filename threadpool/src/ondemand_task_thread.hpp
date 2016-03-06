@@ -32,13 +32,13 @@ class OnDemandTaskThread :  public TaskThread
 {
 public:
     /**
-     * c-tor
+     * ctor
      *
      * @param task that to be executed by the thread.
      */
     OnDemandTaskThread(Task *);
 
-     // d-tor
+     // dtor
     virtual ~OnDemandTaskThread();
 
     // copy ctor
