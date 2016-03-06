@@ -5,30 +5,34 @@
  *
  * Author: Rubens S. Gomes
  *
- * File: i_task.hpp
+ * File: task.hpp
  *
  * Date:  Jan 14, 2016
  * ********************************************************
  */
-#ifndef THREADPOOL_I_TASK_HPP_
-#define THREADPOOL_I_TASK_HPP_
+#ifndef THREADPOOL_TASK_HPP_
+#define THREADPOOL_TASK_HPP_
 
 #include <boost/noncopyable.hpp>
 #include <boost/ptr_container/ptr_vector.hpp>
 
-#include "i_task_listener.hpp"
+#include "task_listener.hpp"
 
 /**
- * A Task contains the code that is to be run from
- * within a separate thread.
+ * An abstract base class that defines a
+ * type for a task to be executed from a
+ * separate thread.
  *
  * @author Rubens Gomes
  */
-class ITask : private boost::noncopyable
+class Task : private boost::noncopyable
 {
 public:
-    ITask();
-    virtual ~ITask();
+    // c-tor
+    Task();
+
+    // d-tor
+    virtual ~Task();
 
     /**
      * The clone method is required by pointer
@@ -37,7 +41,7 @@ public:
      *
      * @return a clone instance.
      */
-    virtual ITask * clone(void) const = 0;
+    virtual Task * clone(void) const = 0;
 
     /**
      * The run method should contain the code that is
@@ -54,15 +58,15 @@ public:
      *
      * @param a listener that is to be registered.
      */
-    void addListener(ITaskListener *);
+    void addListener(TaskListener *);
 
     /**
-     * Removes a previously registered observer with
+     * Removes a previously registered observer of
      * this task.
      *
      * @param a listener that is to be un-registered.
      */
-    void removeListener(ITaskListener &);
+    void removeListener(TaskListener &);
 
     /**
      * Every task is uniquely identified by
@@ -89,7 +93,7 @@ private:
     void notifyListeners(void) const;
 
     double m_id;
-    boost::ptr_vector<ITaskListener> m_listeners;
+    boost::ptr_vector<TaskListener> m_listeners;
     static double s_counter;
 };
 
@@ -99,9 +103,9 @@ private:
 // is to be done as follows. This is simply by
 // defining a free-standing function, new_clone(),
 // as follows:
-inline ITask * new_clone(const ITask & rhs)
+inline Task * new_clone(const Task & rhs)
 {
   return rhs.clone();
 }
 
-#endif /* THREADPOOL_I_TASK_HPP_ */
+#endif /* THREADPOOL_TASK_HPP_ */

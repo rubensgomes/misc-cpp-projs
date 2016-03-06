@@ -16,72 +16,45 @@
 #include <boost/thread.hpp>
 
 /**
- * This class is a Callable object that is
- * meant to be passed as a calleable function when
- * launching a new thread inside the thread pool.
+ * A Template Method Abstract Base class defining a type
+ * to be used by threads that are created using either
+ * the OnDemand or Thread Pool strategy.
  *
  * @author Rubens Gomes
  */
 class TaskThread
 {
 public:
-    /**
-     * Constructor
-     */
+    // c-tor
     TaskThread();
 
-    /**
-     * Copy constructor.  The copy constructor is required
-     * because the newly created thread will need to make
-     * a copy of this object.
-     *
-     * @param the task thread to be copied.
-     */
-    TaskThread(const TaskThread &);
-
-    /**
-     * Destructor.
-     */
-    ~TaskThread();
+    // d-tor
+    virtual ~TaskThread() = 0;
 
     /**
      * Callable method to be executed by the launching
-     * thread in the thread pool.
+     * thread.
      */
-    void operator()(void);
+    virtual void operator()(void) = 0;
 
     /**
-     * Sets a flag to prevent this task thread from
-     * running.
+     * Attempts to stop this thread.
      */
-    void stopMe(void);
+    virtual void stop(void);
 
     /**
      * @return the running status of this task thread.
      */
-    bool isStopped(void) const;
+    virtual bool isStopped(void) const;
 
     /**
      * @return my own task thread id
      */
-    std::string getThreadId(void) const;
+    virtual std::string getThreadId(void) const;
 
-private:
-    /**
-     * Copy Assignment operator must be made private
-     * because we do not want an existing task thread
-     * to be re-assigned from another task thread.
-     *
-     * @param the task thread to be assigned from.
-     */
-    TaskThread & operator = (const TaskThread &);
-
-    std::string m_thread_id;
+protected:
     bool m_is_stopped;
     boost::mutex m_mutex;
 };
-
-// overload << operator
-std::ostream& operator<<(std::ostream &, const TaskThread &);
 
 #endif /* THREADPOOL_TASK_THREAD_HPP_ */

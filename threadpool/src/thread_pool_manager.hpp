@@ -5,28 +5,20 @@
  *
  * Author: Rubens S. Gomes
  *
- * File: thread_pool.hpp
+ * File: thread_pool_manager.hpp
  *
  * Date:  Jan 14, 2016
  * ********************************************************
  */
-#ifndef THREADPOOL_THREAD_POOL_HPP_
-#define THREADPOOL_THREAD_POOL_HPP_
+#ifndef THREADPOOL_THREAD_POOL_MANAGER_HPP_
+#define THREADPOOL_THREAD_POOL_MANAGER_HPP_
 
-#include <boost/noncopyable.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/thread.hpp>
+#include <boost/core/noncopyable.hpp>
+#include <boost/thread/thread.hpp>
 
-#include <vector>
+#include "constants.hpp"
+#include "task.hpp"
 
-#include "i_task.hpp"
-#include "task_thread.hpp"
-
-// TODO: move to a properties file
-// default number of threads created in the thread pool
-const int THREAD_POOL_SIZE = 10;
-// time to wait for threads in pool to shutdown
-const int SHUTDOWN_WAIT_TIME = 3000; // msecs
 
 /**
  * This class implements the Thread Pool Pattern.
@@ -50,7 +42,7 @@ const int SHUTDOWN_WAIT_TIME = 3000; // msecs
  *
  * @author Rubens Gomes
  */
-class ThreadPool : private boost::noncopyable
+class ThreadPoolManager : private boost::noncopyable
 {
 public:
     /**
@@ -61,7 +53,7 @@ public:
      * the threads are placed on stand-by waiting for
      * tasks to be executed.
      */
-    static ThreadPool * instance();
+    static ThreadPoolManager * instance();
 
     /**
      * Delegates to the TaskQueue to add a
@@ -70,7 +62,7 @@ public:
      *
      * @param a task to be run by a thread in the pool.
      */
-    void pushTask(ITask *);
+    void pushTask(Task *);
 
     /**
      * @return the total number of threads in the pool.
@@ -89,17 +81,17 @@ public:
 
 private:
     // private specialized ctor
-    ThreadPool(int total_threads);
+    ThreadPoolManager(int total_threads);
 
     // private ctor
-    ThreadPool();
+    ThreadPoolManager();
 
     // dtor is not used in singletons
-    ~ThreadPool();
+    ~ThreadPoolManager();
 
     // following operators are not used in singletons
-    bool operator==(const ThreadPool &) const;
-    bool operator!=(const ThreadPool &) const;
+    bool operator==(const ThreadPoolManager &) const;
+    bool operator!=(const ThreadPoolManager &) const;
 
     const int m_total_threads;
     bool m_is_shutdown;
@@ -112,7 +104,7 @@ private:
     boost::mutex m_mutex;
     boost::condition_variable m_condition;
     // Singleton
-    static ThreadPool * s_instance;
+    static ThreadPoolManager * s_instance;
 };
 
-#endif /* THREADPOOL_THREAD_POOL_HPP_ */
+#endif /* THREADPOOL_THREAD_POOL_MANAGER_HPP_ */

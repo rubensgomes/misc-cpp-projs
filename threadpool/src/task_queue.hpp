@@ -17,7 +17,7 @@
 #include <boost/ptr_container/ptr_vector.hpp>
 #include <boost/thread.hpp>
 
-#include "i_task.hpp"
+#include "task.hpp"
 
 /**
  * A place holder to manage tasks to be
@@ -45,7 +45,7 @@ public:
      *
      * @param a task to be run by a thread in the pool.
      */
-    void push(ITask *);
+    void push(Task *);
 
     /**
      * Pops a task from the queue.  If no task is
@@ -57,13 +57,16 @@ public:
      * @return pops out the next task in the FIFO queue
      * to be executed by a task thread.
      */
-    ITask & pop(void);
+    Task & pop(void);
 
 private:
+    // private c-tor
     TaskQueue();
+
+    // private d-tor
     ~TaskQueue();
 
-    boost::ptr_vector<ITask> m_tasks;
+    boost::ptr_vector<Task> m_tasks;
     boost::mutex m_mutex;
     boost::condition_variable m_condition;
     // Singleton

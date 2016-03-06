@@ -5,7 +5,7 @@
  *
  * Author: Rubens S. Gomes
  *
- * File: HelloTask.cpp
+ * File: hello_task.cpp
  *
  * Date:  Jan 21, 2016
  * ********************************************************
@@ -15,12 +15,14 @@
 #include <boost/thread.hpp>
 #include <boost/chrono.hpp>
 
+#include "constants.hpp"
 #include "hello_task.hpp"
+
 
 // ctor
 HelloTask::HelloTask()
 {
-    BOOST_LOG_TRIVIAL(trace) << "Task ["
+    BOOST_LOG_TRIVIAL(trace) << "HelloTask ["
                              <<  this
                              << "] constructed";
 }
@@ -28,15 +30,15 @@ HelloTask::HelloTask()
 // dtor
 HelloTask::~HelloTask()
 {
-    BOOST_LOG_TRIVIAL(trace) << "Task ["
+    BOOST_LOG_TRIVIAL(trace) << "HelloTask ["
                              <<  this
                              << "] destructed";
 }
 
 // clone
-ITask * HelloTask::clone(void) const
+Task * HelloTask::clone(void) const
 {
-    BOOST_LOG_TRIVIAL(trace) << "Task ["
+    BOOST_LOG_TRIVIAL(trace) << "HelloTask ["
                              <<  this
                              << "] is being cloned";
 
@@ -46,7 +48,7 @@ ITask * HelloTask::clone(void) const
 
 void HelloTask::do_run() const
 {
-    BOOST_LOG_TRIVIAL(info) << "Task ["
+    BOOST_LOG_TRIVIAL(info) << "HelloTask ["
                             <<  this
                             << "] Hello World!";
 
@@ -54,11 +56,11 @@ void HelloTask::do_run() const
 
     while(true)
     {
+        // create an interrupt point
         boost::this_thread::sleep_for(
           boost::chrono::milliseconds{SLEEP_WAIT_TIME});
         ;
     }
 
     BOOST_LOG_TRIVIAL(info) << "Leaving forever loop.";
-
 }

@@ -14,25 +14,31 @@
 #define BOOST_TEST_MODULE ThreadPool Test Suite 
 #include <boost/test/included/unit_test.hpp> 
 
-#include "thread_pool.hpp"
+#include "thread_pool_manager.hpp"
+#include "thread_ondemand_manager.hpp"
 #include "hello_task.hpp"
-#include "demand_task_thread.hpp"
 
 /**
  * Test Suite for the C++ Thread Pool classes
  *
  * @author Rubens Gomes
  */
-/*BOOST_AUTO_TEST_CASE(threadpool_first_test)
+BOOST_AUTO_TEST_CASE(threadpool_first_test)
 {
-    ThreadPool * pool = ThreadPool::instance();
+    ThreadPoolManager * pool =
+            ThreadPoolManager::instance();
+    Task * task = new HelloTask();
+    pool->pushTask(task);
+    delete task;
     pool->shutdown();
-}*/
+}
 
 BOOST_AUTO_TEST_CASE(demandthread_first_test)
 {
-    HelloTask task;
-    OnDemandTaskThread thread(task);
-    thread.sleep(3000);
-    thread.stop();
+    ThreadOnDemandManager * onDemand =
+            ThreadOnDemandManager::instance();
+    HelloTask * task = new HelloTask();
+    onDemand->launchThread(task);
+    delete task;
+    onDemand->shutdown();
 }

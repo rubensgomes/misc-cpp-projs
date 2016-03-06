@@ -13,12 +13,7 @@
 #ifndef THREADPOOL_TEST_HELLO_TASK_HPP_
 #define THREADPOOL_TEST_HELLO_TASK_HPP_
 
-#include "i_task.hpp"
-
-// TODO: move to a properties file
-// time to sleep running thread to provide
-// an interrupt point
-const int SLEEP_WAIT_TIME = 100; // msecs
+#include "task.hpp"
 
 /**
  * A simple Hello World task used for testing
@@ -26,14 +21,17 @@ const int SLEEP_WAIT_TIME = 100; // msecs
  *
  * @author Rubens Gomes
  */
-class HelloTask: public ITask
+class HelloTask: public Task
 {
 public:
+    // c-tor
     HelloTask();
+
+    // d-tor
     virtual ~HelloTask();
 
     // base class function
-    ITask * clone(void) const;
+    Task * clone(void) const;
 
     // base class function
     void do_run(void) const;

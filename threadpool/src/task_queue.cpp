@@ -48,12 +48,19 @@ TaskQueue::~TaskQueue()
 }
 
 // synchronized method
-void TaskQueue::push(ITask * task)
+void TaskQueue::push(Task * task)
 {
+    if(task == NULL)
+    {
+        throw new std::invalid_argument(
+                "invalid argument task: cannot be NULL");
+    }
+
     boost::unique_lock<boost::mutex> lock(m_mutex);
 
     std::string thread_id = Utility::getRunningThreadId();
-    BOOST_LOG_TRIVIAL(trace) << "thread id [" + thread_id +
+    BOOST_LOG_TRIVIAL(trace) << "thread id [" +
+            thread_id +
             "] is pushing task to queue";
 
     m_tasks.push_back(task);
@@ -65,7 +72,7 @@ void TaskQueue::push(ITask * task)
 }
 
 // synchronized method
-ITask & TaskQueue::pop(void)
+Task & TaskQueue::pop(void)
 {
     boost::unique_lock<boost::mutex> lock(m_mutex);
 
@@ -87,10 +94,11 @@ ITask & TaskQueue::pop(void)
         m_condition.wait(lock);
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "thread id [" + thread_id +
+    BOOST_LOG_TRIVIAL(trace) << "thread id [" +
+            thread_id +
             "] popping task from queue";
 
-    ITask & task = m_tasks.front();
+    Task & task = m_tasks.front();
     return task;
 }
 
