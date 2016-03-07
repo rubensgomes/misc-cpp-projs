@@ -10,8 +10,8 @@
  * Date:  Mar 3, 2016
  * ********************************************************
  */
-#ifndef POOL_TASK_THREAD_HPP_
-#define POOL_TASK_THREAD_HPP_
+#ifndef THREADPOOL_POOL_TASK_THREAD_HPP_
+#define THREADPOOL_POOL_TASK_THREAD_HPP_
 
 #include "task_thread.hpp"
 
@@ -52,4 +52,4 @@ private:
     bool operator!=(const PoolTaskThread &) const;
 };
 
-#endif /* POOL_TASK_THREAD_HPP_ */
+#endif /* THREADPOOL_POOL_TASK_THREAD_HPP_ */

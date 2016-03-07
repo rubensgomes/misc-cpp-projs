@@ -10,8 +10,8 @@
  * Date:  Mar 3, 2016
  * ********************************************************
  */
-#ifndef THREAD_POLICY_ENUM_HPP_
-#define THREAD_POLICY_ENUM_HPP_
+#ifndef THREADPOOL_THREAD_POLICY_ENUM_HPP_
+#define THREADPOOL_THREAD_POLICY_ENUM_HPP_
 
 enum ThreadPolicy
 {
@@ -19,4 +19,4 @@ enum ThreadPolicy
     THREAD_POOL;
 }
 
-#endif /* THREAD_POLICY_ENUM_HPP_ */
+#endif /* THREADPOOL_THREAD_POLICY_ENUM_HPP_ */

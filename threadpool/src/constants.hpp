@@ -10,8 +10,8 @@
  * Date:  Mar 5, 2016
  * ********************************************************
  */
-#ifndef CONSTANTS_HPP_
-#define CONSTANTS_HPP_
+#ifndef THREADPOOL_CONSTANTS_HPP_
+#define THREADPOOL_CONSTANTS_HPP_
 
 // TODO: move to a properties file
 
@@ -28,4 +28,4 @@ const int THREAD_POOL_SIZE = 2;
 // an interrupt point
 const int SLEEP_WAIT_TIME = 100; // msecs
 
-#endif /* CONSTANTS_HPP_ */
+#endif /* THREADPOOL_CONSTANTS_HPP_ */

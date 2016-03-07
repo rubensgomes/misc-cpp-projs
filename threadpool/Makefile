@@ -9,6 +9,7 @@
 .SUFFIXES:
 .SUFFIXES: .cpp .o
 
+AR = ar
 CXX = g++
 MDIR = mkdir
 MV = mv
@@ -51,6 +52,10 @@ endif
 UNDEFS = \
   $(UNDEF_NAMES)
 
+# Archive options
+AR_FLAGS = \
+  -rv
+
 # preprocessor header files search paths
 INCLUDES = \
   -I$(CURDIR)/src \
@@ -80,22 +85,29 @@ LIBS = \
 CXX_SRCDIR = src
 CXX_SRCS = $(wildcard $(CXX_SRCDIR)/*.cpp) 
 
+# C++ project objects
+OBJS = $(CXX_SRCS:.cpp=.o)
+
 # project test source code folder
 TEST_DIR = test
 TEST_SRCS = $(wildcard $(TEST_DIR)/*.cpp) 
 
-# all the sources
-SRCS = $(CXX_SRCS) $(TEST_SRCS)
-
-# all the .o object files
-OBJS = $(SRCS:.cpp=.o)
+# test .o object files
+TEST_OBJS = $(TEST_SRCS:.cpp=.o)
 
 # the target main application
 TARGET = pooltest
 
+# the library
+LIBRARY = threadpool.a
+
 # linking pattern rule to create target
-$(TARGET): $(OBJS)
-	$(CXX) $(LD_FLAGS) $(LIB_DIRS) -o $(TARGET) $(OBJS) $(LIBS)
+$(TARGET): $(TEST_OBJS) $(LIBRARY)
+	$(CXX) $(LD_FLAGS) $(LIB_DIRS) -o $@ $^ $(LIBS)
+
+# archive pattern rule to create library
+$(LIBRARY): $(OBJS)
+	$(AR) $(AR_FLAGS) $@ $^
 
 # compiling rule
 %.o: %.cpp
@@ -104,8 +116,9 @@ $(TARGET): $(OBJS)
 
 # cleans build
 clean:
-	$(RM) -f $(OBJS) $(TARGET) $(TARGET).stackdump
+	$(RM) -f $(ALL_OBJS) $(TARGET) $(TARGET).stackdump
 	$(RM) -fr $(DEP_DIR)
+	$(RM) -fr $(LIBRARY)
 
 $(DEP_DIR)/%.d: ;
 .PRECIOUS: $(DEP_DIR)/%.d
