@@ -10,8 +10,8 @@
  * Date:  Mar 7, 2016
  * ********************************************************
  */
-#ifndef SRC_EVENT_HANDLER_HPP_
-#define SRC_EVENT_HANDLER_HPP_
+#ifndef REACTOR_EVENT_HANDLER_HPP_
+#define REACTOR_EVENT_HANDLER_HPP_
 
 #include <boost/noncopyable.hpp>
 #include <string>
@@ -55,7 +55,7 @@ public:
      *
      * @return the handle used by the event handler.
      */
-    virtual HANDLE getHandle() const = 0;
+    virtual HANDLE getHandle(void) const = 0;
 };
 
-#endif /* SRC_EVENT_HANDLER_HPP_ */
+#endif /* REACTOR_EVENT_HANDLER_HPP_ */

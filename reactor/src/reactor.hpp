@@ -10,8 +10,8 @@
  * Date:  Mar 7, 2016
  * ********************************************************
  */
-#ifndef SRC_REACTOR_HPP_
-#define SRC_REACTOR_HPP_
+#ifndef REACTOR_REACTOR_HPP_
+#define REACTOR_REACTOR_HPP_
 
 #include <boost/noncopyable.hpp>
 
@@ -75,19 +75,19 @@ public:
     /**
      * De-registers all event handlers.
      */
-    virtual void removeAllHandlers() = 0;
+    virtual void removeAllHandlers(void) = 0;
 
     /**
      * Initiates the handling of events.
      */
-    virtual void handleEvents() = 0;
+    virtual void handleEvents(void) = 0;
 
     /**
      * Close all resources used by the Reactor,  and stops handling
      * further events.  Basically it shuts down the Reactor.
      */
-    virtual void close() = 0;
+    virtual void close(void) = 0;
 
 };
 
-#endif /* SRC_REACTOR_HPP_ */
+#endif /* REACTOR_REACTOR_HPP_ */
