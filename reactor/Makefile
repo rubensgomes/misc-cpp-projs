@@ -104,7 +104,8 @@ $(TARGET): $(OBJS)
 
 # cleans build
 clean:
-	$(RM) -f $(OBJS) $(TARGET) $(TARGET).stackdump
+	$(RM) -f $(OBJS) $(TARGET) $(TARGET).stackdump\
+                 $(TARGET).exe.stackdump $(TARGET).core
 	$(RM) -fr $(DEP_DIR)
 
 $(DEP_DIR)/%.d: ;
