@@ -15,6 +15,12 @@
 
 #include "concurrency_strategy.hpp"
 
+/**
+ * The Thread Pool Concurrency Strategy uses a thread from the thread
+ * pool to activate and run a service handler.
+ *
+ * @author Rubens Gomes
+ */
 class ThreadPoolConcurrencyStrategy :
         public ConcurrencyStrategy
 {
