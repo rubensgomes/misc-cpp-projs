@@ -38,19 +38,21 @@ CXX     := /bin/g++
 ECHO    := /bin/echo
 FALSE   := /bin/false
 GREP    := /bin/grep
-GZIP    := /usr/local/bin/gzip
+GZIP    := /bin/gzip
+INSTALL := /bin/install
 MDIR    := /bin/mkdir
 MV      := /bin/mv
 PWD     := /bin/pwd
 RM      := /bin/rm
+RMDIR   := /bin/rmdir
 SED     := /bin/sed
 SHELL   := /bin/sh
-TAR     := /usr/local/bin/tar
-TEST    := /usr/bin/test
+TAR     := /bin/tar
+TEST    := /bin/test
 TOUCH   := /bin/touch
 TRUE    := /bin/true
 WC      := /bin/wc
-ZIP     := /usr/local/bin/zip
+ZIP     := /bin/zip
 
 
 # unames to identify OS
@@ -63,6 +65,10 @@ uname_V := $(shell sh -c 'uname -v 2>/dev/null || echo not')
 
 # boost must be installed in following path
 BOOST_DIR := /usr/local/boost_1_60_0
+
+# root directory where all the project header and 
+# library files are to be installed
+INSTALL_DIR := /usr/local/misc-cpp-projs
 
 # dependency settings
 DEP_DIR     = .depend
@@ -103,7 +109,8 @@ LD_FLAGS = \
 
 # linking libs search paths
 LIB_DIRS = \
-  -L$(BOOST_DIR)/stage/lib
+  -L$(BOOST_DIR)/stage/lib \
+  -L$(INSTALL_DIR)/lib
 
 # linking libs to search
 LIBS = \
@@ -116,7 +123,8 @@ AR_FLAGS   = -rv
 
 # C++ project sources + objects
 CXX_SRCDIR = src
-CXX_SRCS   = $(wildcard $(CXX_SRCDIR)/*.cpp) 
+CXX_SRCS   = $(wildcard $(CXX_SRCDIR)/*.cpp)
+CXX_HDRS   = $(wildcard $(CXX_SRCDIR)/*.hpp) 
 OBJS       = $(CXX_SRCS:.cpp=.o)
 
 # C++ project test source + objects
@@ -134,7 +142,7 @@ MAKE_SUBDIRS=\
 				${ECHO} "Making [$@] in dir: `pwd`/$${d}"; \
 				${MAKE} -C $$d $@; \
 			else \
-				${ECHO} "error: dir not found: $${d}"; \
+				${ECHO} "error: dir not find: $${d}"; \
 				${FALSE}; \
 			fi; \
 		done; \

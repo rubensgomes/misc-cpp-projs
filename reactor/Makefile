@@ -28,11 +28,7 @@ $(shell $(MDIR) -p $(DEP_DIR)/test)
 
 INCLUDES := \
   $(INCLUDES) \
-  -I$(TOPDIR)/threadpool/src
-
-LIB_DIRS := \
-  $(LIB_DIRS) \
-  -L$(TOPDIR)/threadpool
+  -I$(INSTALL_DIR)/include/threadpool
 
 LIBS := \
   $(LIBS) \
@@ -46,7 +42,7 @@ LIBRARY = libreactor.a
 
 # linking pattern rule to create target
 $(TARGET): $(TEST_OBJS) $(LIBRARY)
-	$(CXX) $(LD_FLAGS) $(LIB_DIRS) -o $@ $(TEST_OBJS) $(LIBRARY) $(LIBS)
+	$(CXX) $(LD_FLAGS) $(LIB_DIRS) -o $@ $(TEST_OBJS) $(LIBS)
 
 # archive pattern rule to create library
 $(LIBRARY): $(OBJS)
@@ -60,6 +56,20 @@ clean:
 	$(RM) -f $(TEST_OBJS)
 	$(RM) -fr $(DEP_DIR)
 	$(RM) -f $(LIBRARY)
+
+install: $(LIBRARY)
+	@if $(TEST) ! -d $(INSTALL_DIR)/include/reactor; then \
+		$(MDIR) -p 755 -v $(INSTALL_DIR)/include/reactor; \
+	fi
+	@if $(TEST) ! -d $(INSTALL_DIR)/lib; then \
+		$(MDIR) -p 755 -v $(INSTALL_DIR)/lib; \
+	fi
+	$(INSTALL) -m 644 -v -t $(INSTALL_DIR)/include/reactor $(CXX_HDRS)
+	$(INSTALL) -m 644 -v -t $(INSTALL_DIR)/lib $(LIBRARY)
+
+uninstall:
+	$(RM) -rfv $(INSTALL_DIR)/include/reactor
+	$(RM) -fv $(INSTALL_DIR)/lib/$(LIBRARY)
 
 include ${TOPDIR}/makefiles/Rules.mk
 

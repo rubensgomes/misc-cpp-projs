@@ -49,5 +49,19 @@ clean:
 	$(RM) -fr $(DEP_DIR)
 	$(RM) -f $(LIBRARY)
 
+install: $(LIBRARY)
+	@if $(TEST) ! -d $(INSTALL_DIR)/include/threadpool; then \
+		$(MDIR) -p 755 -v $(INSTALL_DIR)/include/threadpool; \
+	fi
+	@if $(TEST) ! -d $(INSTALL_DIR)/lib; then \
+		$(MDIR) -p 755 -v $(INSTALL_DIR)/lib; \
+	fi
+	$(INSTALL) -m 644 -v -t $(INSTALL_DIR)/include/threadpool $(CXX_HDRS)
+	$(INSTALL) -m 644 -v -t $(INSTALL_DIR)/lib $(LIBRARY)
+
+uninstall:
+	$(RM) -rfv $(INSTALL_DIR)/include/threadpool
+	$(RM) -fv $(INSTALL_DIR)/lib/$(LIBRARY)
+
 include ${TOPDIR}/makefiles/Rules.mk
 
