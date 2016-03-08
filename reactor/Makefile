@@ -26,6 +26,18 @@ $(shell $(MDIR) -p $(DEP_DIR))
 $(shell $(MDIR) -p $(DEP_DIR)/src)
 $(shell $(MDIR) -p $(DEP_DIR)/test)
 
+INCLUDES := \
+  $(INCLUDES) \
+  -I$(TOPDIR)/threadpool/src
+
+LIB_DIRS := \
+  $(LIB_DIRS) \
+  -L$(TOPDIR)/threadpool
+
+LIBS := \
+  $(LIBS) \
+  -lthreadpool
+
 # the target main application
 TARGET = reactortest
 

@@ -124,6 +124,22 @@ TEST_DIR  = test
 TEST_SRCS = $(wildcard $(TEST_DIR)/*.cpp) 
 TEST_OBJS = $(TEST_SRCS:.cpp=.o)
 
+##
+## MAKE_SUBDIRS is used by the top Makefile to make all subdirectories
+##
+MAKE_SUBDIRS=\
+	@if ${TEST} `${ECHO} ${SUBDIRS} | ${WC} -w` -gt 0; then \
+		for d in ${SUBDIRS}; do \
+			if ${TEST} -d $$d; then \
+				${ECHO} "Making [$@] in dir: `pwd`/$${d}"; \
+				${MAKE} -C $$d $@; \
+			else \
+				${ECHO} "error: dir not found: $${d}"; \
+				${FALSE}; \
+			fi; \
+		done; \
+	fi
+
 
 endif # ifndef DEFS_MK
 ######################################################################
