@@ -13,15 +13,18 @@
 #ifndef THREADPOOL_ONDEMAND_TASK_THREAD_HPP_
 #define THREADPOOL_ONDEMAND_TASK_THREAD_HPP_
 
+#include <memory>
+
 #include "task.hpp"
 #include "task_thread.hpp"
 
 
 /**
  * A specialized TaskThread to be used by the OnDemand
- * Thread policy.  Tasks to be executed by this thread
- * must be passed into the constructor.  The passed in
- * Task is then executed by a separate task thread.
+ * Thread policy.  Tasks to be executed by a separate
+ * thread must be transfered to the class constructor. The
+ * class instance takes ownership of the task which is
+ * submitted to run in its own thread.
  *
  * Use the singleton instance of the ThreadOnDemandManager
  * to create/launch/manage the OnDemandTaskThread.
@@ -31,18 +34,22 @@
 class OnDemandTaskThread :  public TaskThread
 {
 public:
+    // ctor
     /**
-     * ctor
-     *
-     * @param task that to be executed by the thread.
+     * @param task to be executed by the thread.  The
+     * task ownership is moved to this class instance.
      */
-    OnDemandTaskThread(Task *);
-
-     // dtor
-    virtual ~OnDemandTaskThread();
+    OnDemandTaskThread(std::unique_ptr<Task>);
 
     // copy ctor
+    /**
+     * @param the OnDemandTaskThread to copy into the
+     * newly created instance.
+     */
     OnDemandTaskThread(const OnDemandTaskThread &);
+
+    // dtor
+    virtual ~OnDemandTaskThread();
 
     /**
      * Overridden function.
@@ -53,11 +60,24 @@ public:
     virtual void operator()(void);
 
 private:
+    // private ctor
+    OnDemandTaskThread();
+
+    // private copy assignment ctor
+    OnDemandTaskThread & operator=(const OnDemandTaskThread &);
+
     // following operators are not used in this class
     bool operator==(const OnDemandTaskThread &) const;
     bool operator!=(const OnDemandTaskThread &) const;
 
-    Task * m_task;
+    std::unique_ptr<Task> m_task;
 };
+
+// helper to deep copy unique_ptr
+template< class T >
+std::unique_ptr<T> copy_unique(const std::unique_ptr<T> & rhs)
+{
+    return rhs ? std::make_unique<T>( * rhs) : nullptr;
+}
 
 #endif /* THREADPOOL_ONDEMAND_TASK_THREAD_HPP_ */

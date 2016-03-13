@@ -13,19 +13,23 @@
 #ifndef THREADPOOL_CONSTANTS_HPP_
 #define THREADPOOL_CONSTANTS_HPP_
 
+#include <chrono>
+
+typedef std::chrono::duration<int,std::milli> millisecs_t;
+
 // TODO: move to a properties file
 
 // time to wait for threads in pool to shutdown
-const int SHUTDOWN_WAIT_TIME = 3000; // msecs
+constexpr int SHUTDOWN_WAIT_TIME = 3000; // msecs
 
 // time to wait for thread to stop
-const int STOP_WAIT_TIME = 3000; // msecs
+constexpr int STOP_WAIT_TIME = 3000; // msecs
 
 // default number of threads created in the thread pool
-const int THREAD_POOL_SIZE = 2;
+constexpr int THREAD_POOL_SIZE = 2;
 
 // time to sleep running thread to provide
 // an interrupt point
-const int SLEEP_WAIT_TIME = 100; // msecs
+constexpr int SLEEP_WAIT_TIME = 1000; // msecs
 
 #endif /* THREADPOOL_CONSTANTS_HPP_ */

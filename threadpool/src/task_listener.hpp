@@ -22,20 +22,11 @@
  *
  * @author Rubens Gomes
  */
-class TaskListener: private boost::noncopyable
+class TaskListener : private boost::noncopyable
 {
 public:
     // dtor
     virtual ~TaskListener() = 0;
-
-    /**
-     * The clone method is required by pointer
-     * containers (for example boost::ptr_vector<>)
-     * when storing instance pointers.
-     *
-     * @return a clone instance.
-     */
-    virtual TaskListener * clone(void) const = 0;
 
     /**
      * The client will get a call back on this
@@ -60,20 +51,16 @@ public:
      * different address; false, otherwise.
      */
     bool operator!=(const TaskListener &) const;
+
+private:
+    // private ctor
+    TaskListener();
+
+    // private copy ctor
+    TaskListener(const TaskListener &);
+
+    // private copy assignment ctor
+    TaskListener & operator=(const TaskListener &);
 };
-
-inline TaskListener::~TaskListener()
-{}
-
-// We allow cloning to allow this object to be
-// stored in pointer containers.  And we need
-// to tell the pointer containers how cloning
-// is to be done as follows. This is simply by
-// defining a free-standing function, new_clone(),
-// as follows:
-inline TaskListener * new_clone(const TaskListener & rhs)
-{
-  return rhs.clone();
-}
 
 #endif /* THREADPOOL_TASK_DONE_LISTENER_HPP_ */

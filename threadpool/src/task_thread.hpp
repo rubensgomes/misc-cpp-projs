@@ -13,7 +13,8 @@
 #ifndef THREADPOOL_TASK_THREAD_HPP_
 #define THREADPOOL_TASK_THREAD_HPP_
 
-#include <boost/thread.hpp>
+#include <mutex>
+#include <string>
 
 /**
  * A Template Method Abstract Base class defining a type
@@ -25,10 +26,13 @@
 class TaskThread
 {
 public:
-    // c-tor
+    // ctor
     TaskThread();
 
-    // d-tor
+    // copy ctor
+    TaskThread(const TaskThread &);
+
+    // dtor
     virtual ~TaskThread() = 0;
 
     /**
@@ -54,7 +58,16 @@ public:
 
 protected:
     bool m_is_stopped;
-    boost::mutex m_mutex;
+    std::mutex m_mutex;
+
+private:
+    // private copy assignment ctor
+    TaskThread & operator=(const TaskThread &);
+
+    // following operators are not used in this class
+    bool operator==(const TaskThread &) const;
+    bool operator!=(const TaskThread &) const;
+
 };
 
 #endif /* THREADPOOL_TASK_THREAD_HPP_ */

@@ -17,10 +17,10 @@
 
 /**
  * A specialized TaskThread to be used by the Thread Pool
- * policy.  Tasks to be executed by this thread must be
- * added to the TaskQueue.  Once a task is available in
- * the TaskQueue that task is popped from the queue and
- * executed by this task thread.
+ * policy.  Tasks to be executed by a thread in the pool
+ * must be added to the TaskQueue.  Once a task is
+ * available in the TaskQueue that task is executed
+ * by one of the threads available in the pool.
  *
  * Use the singleton instance of the ThreadPoolManager to
  * create/launch/manage the PoolTaskThread.
@@ -33,11 +33,11 @@ public:
     // ctor
     PoolTaskThread();
 
-    // dtor
-    virtual ~PoolTaskThread();
-
     // copy ctor
     PoolTaskThread(const PoolTaskThread &);
+
+    // dtor
+    virtual ~PoolTaskThread();
 
     /**
      * Overridden function.
@@ -47,6 +47,9 @@ public:
     virtual void operator()(void);
 
 private:
+    // private copy assignment ctor
+    PoolTaskThread & operator=(const PoolTaskThread &);
+
     // following operators are not used in this class
     bool operator==(const PoolTaskThread &) const;
     bool operator!=(const PoolTaskThread &) const;

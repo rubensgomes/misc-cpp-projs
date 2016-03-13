@@ -11,101 +11,67 @@
  * ********************************************************
  */
 #include <boost/log/trivial.hpp>
-#include <boost/chrono.hpp>
 
 #include "ondemand_task_thread.hpp"
-#include "utility.hpp"
+#include "thread_cancellation_exception.hpp"
+
+using namespace std;
 
 // ctor
-OnDemandTaskThread::OnDemandTaskThread(Task * task)
-: m_task(task)
+OnDemandTaskThread::OnDemandTaskThread(std::unique_ptr<Task> task)
+: m_task(move(task))
 {
     BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread ["
                              << this
-                             << "] being constructed.";
+                             << "] constructed.";
+}
 
-    if(task == NULL)
-    {
-        throw new std::invalid_argument(
-                "invalid argument task: cannot be NULL.");
-    }
-
+// copy ctor
+OnDemandTaskThread::OnDemandTaskThread(const OnDemandTaskThread & rhs)
+: TaskThread(rhs),
+  m_task(rhs.m_task->clone())
+{
+    // m_mutex is not copyable
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread copy constructed ["
+                             << this
+                             << "]";
 }
 
 // dtor
 OnDemandTaskThread::~OnDemandTaskThread()
 {
-    BOOST_LOG_TRIVIAL(trace) << "Demnad thread ["
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread ["
                              << this
-                             << "] destructed.";
+                             << "] being destructed.";
 }
 
-// copy ctor
-OnDemandTaskThread::OnDemandTaskThread(
-        const OnDemandTaskThread & rhs)
-: m_task(rhs.m_task)
-{
-    // m_mutex is not copyable
-    BOOST_LOG_TRIVIAL(trace) << "Copy constructed ["
-                             << this
-                             << "]";
-}
-
+// synchronized
 void OnDemandTaskThread::operator() (void)
 {
-    std::string thread_id = Utility::getRunningThreadId();
+    lock_guard<mutex>(TaskThread::m_mutex);
 
-    BOOST_LOG_TRIVIAL(trace) << "OnDemandTaskThread id [" +
-            thread_id +
-            "] inside operator()() ...";
+    string thread_id = getThreadId();
 
-    if( m_is_stopped )
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread id ["
+                             << thread_id
+                             << "] inside operator()() ...";
+
+    if( TaskThread::m_is_stopped )
     {
-        throw new std::runtime_error(
+        throw new runtime_error(
                 "OnDemandTaskThread thread id [" +
                 thread_id +
-                "] has been stopped.");
+                "] is stopped.");
     }
 
-    m_mutex.lock();
-
-    try
-    {
-        BOOST_LOG_TRIVIAL(trace) << "OnDemandTaskThread id ["
-                                 << thread_id
-                                 << "] running task id ["
-                                 << m_task->getId()
-                                 << "]";
-        m_task->run();
-        BOOST_LOG_TRIVIAL(trace) << "Task with id ["
-                                 << m_task->getId()
-                                 << "] is done";
-    }
-    catch(const boost::thread_interrupted & )
-    {
-        m_mutex.unlock();
-        BOOST_LOG_TRIVIAL(info) << "task thread id ["
-                                 << thread_id
-                                 << "] interrupted.";
-        TaskThread::stop();
-    }
-    catch(const boost::thread_resource_error &)
-    {
-        m_mutex.unlock();
-        BOOST_LOG_TRIVIAL(error) << "thread with id [ "
-                                 << thread_id
-                                 << "] failed due to resource error";
-        TaskThread::stop();
-    }
-    catch(...)
-    {
-        m_mutex.unlock();
-        BOOST_LOG_TRIVIAL(error) << "thread with id [ "
-                                 << thread_id
-                                 << "] failed due to an error";
-        TaskThread::stop();
-    }
-
-    m_mutex.unlock();
+    BOOST_LOG_TRIVIAL(trace) << "OnDemandTaskThread id ["
+                             << thread_id
+                             << "] running task id ["
+                             << m_task->getId()
+                             << "]";
+    m_task->run();
+    BOOST_LOG_TRIVIAL(trace) << "Task with id ["
+                             << m_task->getId()
+                             << "] is done";
 }
 

@@ -11,13 +11,14 @@
  * ********************************************************
  */
 
-#include <boost/log/trivial.hpp>
-#include <boost/thread.hpp>
-#include <boost/chrono.hpp>
+#include<thread>
 
-#include "constants.hpp"
+#include <boost/log/trivial.hpp>
+
+#include "globals.hpp"
 #include "hello_task.hpp"
 
+using namespace std;
 
 // ctor
 HelloTask::HelloTask()
@@ -50,17 +51,15 @@ void HelloTask::do_run() const
 {
     BOOST_LOG_TRIVIAL(info) << "HelloTask ["
                             <<  this
-                            << "] Hello World!";
+                            << "] run started";
 
-    BOOST_LOG_TRIVIAL(info) << "Entering forever loop.";
+    millisecs_t timeout = millisecs_t(SLEEP_WAIT_TIME);
 
     while(true)
     {
         // create an interrupt point
-        boost::this_thread::sleep_for(
-          boost::chrono::milliseconds{SLEEP_WAIT_TIME});
-        ;
+        this_thread::sleep_for(timeout);
     }
 
-    BOOST_LOG_TRIVIAL(info) << "Leaving forever loop.";
+    BOOST_LOG_TRIVIAL(info) << "HelloTask finished.";
 }

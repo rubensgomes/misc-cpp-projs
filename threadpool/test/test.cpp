@@ -12,6 +12,8 @@
  */
 
 #define BOOST_TEST_MODULE ThreadPool Test Suite 
+#include <memory>
+
 #include <boost/test/included/unit_test.hpp> 
 
 #include "thread_pool_manager.hpp"
@@ -27,18 +29,16 @@ BOOST_AUTO_TEST_CASE(threadpool_first_test)
 {
     ThreadPoolManager * pool =
             ThreadPoolManager::instance();
-    Task * task = new HelloTask();
-    pool->pushTask(task);
+    std::unique_ptr<Task> task (new HelloTask());
+    pool->pushTask(move(task));
     pool->shutdown();
-    delete task;
 }
 
 BOOST_AUTO_TEST_CASE(demandthread_first_test)
 {
     ThreadOnDemandManager * onDemand =
             ThreadOnDemandManager::instance();
-    HelloTask * task = new HelloTask();
-    onDemand->launchThread(task);
+    std::unique_ptr<Task> task(new HelloTask());
+    onDemand->launchThread(move(task));
     onDemand->shutdown();
-    delete task;
 }

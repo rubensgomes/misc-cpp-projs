@@ -13,11 +13,16 @@
 #ifndef THREADPOOL_TASK_QUEUE_HPP_
 #define THREADPOOL_TASK_QUEUE_HPP_
 
-#include <boost/noncopyable.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/thread.hpp>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <queue>
 
+#include <boost/noncopyable.hpp>
+
+#include "globals.hpp"
 #include "task.hpp"
+#include "thread_cancellation_point.hpp"
 
 /**
  * A place holder to manage tasks to be
@@ -44,8 +49,9 @@ public:
      * that is pending on a task to be available.
      *
      * @param a task to be run by a thread in the pool.
+     * The task ownership is moved to the queue.
      */
-    void push(Task *);
+    void push(std::unique_ptr<Task>);
 
     /**
      * Pops a task from the queue.  If no task is
@@ -57,20 +63,39 @@ public:
      * @return pops out the next task in the FIFO queue
      * to be executed by a task thread.
      */
-    Task & pop(void);
+    std::unique_ptr<Task> pop(void);
+
+    /**
+     * Shuts down the queue by completely clearing
+     * all the tasks stored in the queue.
+     */
+    void shutdown(void);
 
 private:
-    // private c-tor
+    // private ctor
     TaskQueue();
 
-    // private d-tor
+    // private copy ctor
+    TaskQueue(const TaskQueue &);
+
+    // private dtor
     ~TaskQueue();
 
-    boost::ptr_vector<Task> m_tasks;
-    boost::mutex m_mutex;
-    boost::condition_variable m_condition;
+    // private copy assignment ctor
+    TaskQueue & operator=(const TaskQueue &);
+
+    // following operators are not used in this class
+    bool operator==(const TaskQueue &) const;
+    bool operator!=(const TaskQueue &) const;
+
+    std::queue<std::unique_ptr<Task>> m_tasks;
+    std::mutex m_mutex;
+    std::condition_variable m_condition;
+    ThreadCancellationPoint m_cancel_point;
+
     // Singleton
     static TaskQueue * s_instance;
+    static millisecs_t s_timeout;
 };
 
 #endif /* THREADPOOL_TASK_QUEUE_HPP_ */

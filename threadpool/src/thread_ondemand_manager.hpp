@@ -13,10 +13,15 @@
 #ifndef THREADPOOL_THREAD_ONDEMAND_MANAGER_HPP_
 #define THREADPOOL_THREAD_ONDEMAND_MANAGER_HPP_
 
-#include <boost/thread/thread.hpp>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <thread>
+#include <vector>
+
 #include <boost/core/noncopyable.hpp>
 
-#include "constants.hpp"
+#include "globals.hpp"
 #include "task.hpp"
 
 
@@ -38,9 +43,10 @@ public:
      * Creates and launches a single thread to execute
      * the given task.
      *
-     * @param a task to be run by the thread.
+     * @param a task to be run by the thread. The task
+     * ownership is moved to this class instance.
      */
-    void launchThread(Task *);
+    void launchThread(std::unique_ptr<Task>);
 
     /**
      * Nicely stops the running thread.
@@ -54,22 +60,22 @@ private:
     // private ctor
     ThreadOnDemandManager();
 
-    // dtor is not used in singletons
+    // private dtor
     ~ThreadOnDemandManager();
+
+    // private copy ctor
+    ThreadOnDemandManager(const ThreadOnDemandManager &);
+
+    // private copy assignment
+    ThreadOnDemandManager & operator=(const ThreadOnDemandManager &);
 
     // following operators are not used in singletons
     bool operator==(const ThreadOnDemandManager &) const;
     bool operator!=(const ThreadOnDemandManager &) const;
 
     bool m_is_shutdown;
+    std::mutex m_mutex;
 
-    // places threads in both thread group
-    // and ptr container
-    boost::thread_group m_thread_group;
-    boost::ptr_vector<boost::thread> m_threads;
-
-    boost::mutex m_mutex;
-    boost::condition_variable m_condition;
     // Singleton
     static ThreadOnDemandManager * s_instance;
 };

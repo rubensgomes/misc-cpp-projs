@@ -13,15 +13,23 @@
 #ifndef THREADPOOL_TASK_HPP_
 #define THREADPOOL_TASK_HPP_
 
+#include <memory>
+#include <vector>
+
 #include <boost/noncopyable.hpp>
-#include <boost/ptr_container/ptr_vector.hpp>
 
 #include "task_listener.hpp"
+#include "thread_cancellation_point.hpp"
 
 /**
  * An abstract base class that defines a
  * type for a task to be executed from a
  * separate thread.
+ *
+ * This class is NOT thread-safe.  Since a
+ * task should be executed within a single
+ * separate thread, the author did not concern
+ * about making this class thread-safe.
  *
  * @author Rubens Gomes
  */
@@ -35,9 +43,10 @@ public:
     virtual ~Task();
 
     /**
-     * The clone method is required by pointer
-     * containers (for example boost::ptr_vector<>)
-     * when storing instance pointers.
+     * The clone method is required in order to
+     * properly copy pointer containers (for example
+     * std::vector<std::unique_ptr<TaskListener>>)
+     * being used by this class.
      *
      * @return a clone instance.
      */
@@ -56,9 +65,11 @@ public:
      * Registers an observer which wants be notified
      * when this task is done.
      *
-     * @param a listener that is to be registered.
+     * @param a listener that is to be registered with
+     * this task.  The ownership of the listener is moved
+     * to the task instance.
      */
-    void addListener(TaskListener *);
+    void addListener(std::unique_ptr<TaskListener>);
 
     /**
      * Removes a previously registered observer of
@@ -66,7 +77,7 @@ public:
      *
      * @param a listener that is to be un-registered.
      */
-    void removeListener(TaskListener &);
+    void removeListener(const std::unique_ptr<TaskListener> &);
 
     /**
      * Every task is uniquely identified by
@@ -76,7 +87,23 @@ public:
      */
     double getId(void) const;
 
+    /**
+     * Stops all tasks.  It sets a flag in attempt to
+     * break out this thread execution.
+     */
+    static void stopAll(void);
+
 private:
+    // private copy ctor
+    Task(const Task &);
+
+    // private copy assignment ctor
+    Task & operator=(const Task &);
+
+    // following operators are not used in this class
+    bool operator==(const Task &) const;
+    bool operator!=(const Task &) const;
+
     /**
      * This method should implement whatever the task
      * needs to accomplish when it is executed by a
@@ -93,19 +120,13 @@ private:
     void notifyListeners(void) const;
 
     double m_id;
-    boost::ptr_vector<TaskListener> m_listeners;
-    static double s_counter;
-};
+    std::vector<std::unique_ptr<TaskListener>> m_listeners;
+    ThreadCancellationPoint m_cancel_point;
 
-// We allow cloning to allow this object to be
-// stored in pointer containers.  And we need
-// to tell the pointer containers how cloning
-// is to be done as follows. This is simply by
-// defining a free-standing function, new_clone(),
-// as follows:
-inline Task * new_clone(const Task & rhs)
-{
-  return rhs.clone();
-}
+    // static variables
+    static double s_counter;
+    // when true it means task should stop.
+    static bool s_is_stopped;
+};
 
 #endif /* THREADPOOL_TASK_HPP_ */

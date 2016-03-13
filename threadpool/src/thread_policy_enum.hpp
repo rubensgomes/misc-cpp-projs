@@ -16,7 +16,7 @@
 enum ThreadPolicy
 {
     THREAD_ONDEMAND,
-    THREAD_POOL;
-}
+    THREAD_POOL
+};
 
 #endif /* THREADPOOL_THREAD_POLICY_ENUM_HPP_ */

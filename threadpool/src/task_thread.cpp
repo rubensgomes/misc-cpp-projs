@@ -10,12 +10,16 @@
  * Date:  Jan 16, 2016
  * ********************************************************
  */
+#include <thread>
+
 #include <boost/log/trivial.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "task_thread.hpp"
-#include "utility.hpp"
 
-// c-tor
+using namespace std;
+
+// ctor
 TaskThread::TaskThread()
 : m_is_stopped(false),
   m_mutex()
@@ -25,37 +29,48 @@ TaskThread::TaskThread()
                              << "] constructed.";
 }
 
-// private d-tor
+// private copy ctor
+TaskThread::TaskThread(const TaskThread & rhs)
+: m_is_stopped(rhs.m_is_stopped),
+  m_mutex()
+{
+    BOOST_LOG_TRIVIAL(trace) << "TaskThread ["
+                             << this
+                             << "] copy constructed.";
+}
+
+// private dtor
 TaskThread::~TaskThread()
 {
     BOOST_LOG_TRIVIAL(trace) << "TaskThread ["
                              << this
-                             << "] destructed.";
+                             << "] being destructed.";
 }
 
-std::string TaskThread::getThreadId(void) const
+string TaskThread::getThreadId(void) const
 {
-    return Utility::getRunningThreadId();
+    string id = boost::lexical_cast<string>(this_thread::get_id());
+    return id;
 }
 
-// synchronized method
+// synchronized
 void TaskThread::stop(void)
 {
+    lock_guard<mutex> lock(m_mutex);
+
     if (m_is_stopped)
     {
         BOOST_LOG_TRIVIAL(trace) << "task thread id ["
                                  << getThreadId()
-                                 << "] has already been stopped.";
+                                 << "] already stopped.";
         return;
     }
 
     BOOST_LOG_TRIVIAL(trace) << "task thread id ["
                              << getThreadId()
-                             << "] is being stopped.";
+                             << "] stop flag being set.";
 
-    m_mutex.lock();
     m_is_stopped = true;
-    m_mutex.unlock();
 }
 
 bool TaskThread::isStopped(void) const

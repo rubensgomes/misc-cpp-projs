@@ -13,10 +13,15 @@
 #ifndef THREADPOOL_THREAD_POOL_MANAGER_HPP_
 #define THREADPOOL_THREAD_POOL_MANAGER_HPP_
 
-#include <boost/core/noncopyable.hpp>
-#include <boost/thread/thread.hpp>
+#include <condition_variable>
+#include <memory>
+#include <mutex>
+#include <thread>
+#include <vector>
 
-#include "constants.hpp"
+#include <boost/core/noncopyable.hpp>
+
+#include "globals.hpp"
 #include "task.hpp"
 
 
@@ -61,8 +66,10 @@ public:
      * be executed by a free thread in the thread pool.
      *
      * @param a task to be run by a thread in the pool.
+     * The task ownership is moved to this class
+     * instance.
      */
-    void pushTask(Task *);
+    void pushTask(std::unique_ptr<Task>);
 
     /**
      * @return the total number of threads in the pool.
@@ -86,8 +93,14 @@ private:
     // private ctor
     ThreadPoolManager();
 
-    // dtor is not used in singletons
+    // private dtor not used in singletons
     ~ThreadPoolManager();
+
+    // private copy ctor
+    ThreadPoolManager(const ThreadPoolManager &);
+
+    // private copy assignment ctor
+    ThreadPoolManager & operator=(const ThreadPoolManager &);
 
     // following operators are not used in singletons
     bool operator==(const ThreadPoolManager &) const;
@@ -96,13 +109,10 @@ private:
     const int m_total_threads;
     bool m_is_shutdown;
 
-    // places threads in both thread group
-    // and ptr container
-    boost::thread_group m_thread_group;
-    boost::ptr_vector<boost::thread> m_threads;
+    std::vector<std::unique_ptr<std::thread>> m_threads;
+    std::mutex m_mutex;
+    std::condition_variable m_condition;
 
-    boost::mutex m_mutex;
-    boost::condition_variable m_condition;
     // Singleton
     static ThreadPoolManager * s_instance;
 };

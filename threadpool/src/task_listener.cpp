@@ -13,6 +13,9 @@
 
 #include "task_listener.hpp"
 
+TaskListener::~TaskListener()
+{}
+
 bool TaskListener::operator==(const TaskListener & rhs) const
 {
     bool status = (this == &rhs);
