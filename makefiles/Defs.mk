@@ -101,7 +101,7 @@ INCLUDES = \
 # compiling flags
 # -Wextra -pedantic 
 CXX_FLAGS = \
-  -c -g -Wall -std=c++11 \
+  -c -g -Wall -std=c++14 \
   $(DEFS) $(UNDEFS) $(INCLUDES) 
 
 # linking flags

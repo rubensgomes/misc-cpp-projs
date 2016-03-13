@@ -15,7 +15,7 @@
 ifndef RULES_MK
 RULES_MK:=1
 
-.PHONY: default all clean clobber install
+.PHONY: default all clean clobber install uninstall
 
 ##
 ## only take the significant suffixes described in the second line.
