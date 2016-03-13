@@ -55,14 +55,16 @@ ThreadOnDemandManager::~ThreadOnDemandManager()
 void ThreadOnDemandManager::launchThread(unique_ptr<Task> task)
 {
     OnDemandTaskThread taskThread(move(task));
-    BOOST_LOG_TRIVIAL(trace) << "launching new task thread ...";
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager launching new task thread ...";
     unique_ptr<thread> t {new thread(taskThread)};
 }
 
 // synchronized
 void ThreadOnDemandManager::shutdown(void)
 {
-    lock_guard<mutex> lock(m_mutex);
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager entering shutdown...";
+
+    lock_guard<mutex> grd_lock(m_mutex);
 
     if(m_is_shutdown)
     {
@@ -70,11 +72,11 @@ void ThreadOnDemandManager::shutdown(void)
         return;
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "calling Task::stopAll()...";
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager calling Task::stopAll()...";
 
     Task::stopAll();
 
-    BOOST_LOG_TRIVIAL(trace) << "all threads have stopped.";
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager all threads have stopped.";
 
     m_is_shutdown = true;
 }

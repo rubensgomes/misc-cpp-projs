@@ -56,17 +56,21 @@ string TaskThread::getThreadId(void) const
 // synchronized
 void TaskThread::stop(void)
 {
-    lock_guard<mutex> lock(m_mutex);
+    BOOST_LOG_TRIVIAL(trace) << "TaskThread entering stop...";
+
+    lock_guard<mutex> grd_lock(m_mutex);
 
     if (m_is_stopped)
     {
-        BOOST_LOG_TRIVIAL(trace) << "task thread id ["
+        BOOST_LOG_TRIVIAL(trace) << "TaskThread "
+                                 << "task thread id ["
                                  << getThreadId()
                                  << "] already stopped.";
         return;
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "task thread id ["
+    BOOST_LOG_TRIVIAL(trace) << "TaskThread "
+                             << "task thread id ["
                              << getThreadId()
                              << "] stop flag being set.";
 

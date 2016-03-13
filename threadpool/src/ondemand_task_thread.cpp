@@ -48,7 +48,9 @@ OnDemandTaskThread::~OnDemandTaskThread()
 // synchronized
 void OnDemandTaskThread::operator() (void)
 {
-    lock_guard<mutex>(TaskThread::m_mutex);
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread entering operator() ..";
+
+    lock_guard<mutex> grd_lock(TaskThread::m_mutex);
 
     string thread_id = getThreadId();
 
@@ -70,7 +72,8 @@ void OnDemandTaskThread::operator() (void)
                              << m_task->getId()
                              << "]";
     m_task->run();
-    BOOST_LOG_TRIVIAL(trace) << "Task with id ["
+    BOOST_LOG_TRIVIAL(trace) << "OnDemandTaskThread "
+                             << "Task with id ["
                              << m_task->getId()
                              << "] is done";
 }

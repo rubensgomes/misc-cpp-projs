@@ -47,16 +47,19 @@ TaskQueue::TaskQueue()
 {
     BOOST_LOG_TRIVIAL(trace) << "TaskQueue ["
                              << this
-                             << "] singleton constructed";
+                             << "] constructed";
 }
 
 // synchronized
 void TaskQueue::push(unique_ptr<Task> task)
 {
-    lock_guard<mutex> lock(m_mutex);
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue entering push...";
+
+    lock_guard<mutex> grd_lock(m_mutex);
 
     string id = boost::lexical_cast<string>(this_thread::get_id());
-    BOOST_LOG_TRIVIAL(trace) << "thread id ["
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue "
+                             << "thread id ["
                              << id
                              << "] pushing task to queue";
 
@@ -71,21 +74,32 @@ void TaskQueue::push(unique_ptr<Task> task)
 // synchronized method
 unique_ptr<Task> TaskQueue::pop(void)
 {
-    lock_guard<mutex> lock(m_mutex);
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue entering pop...";
+
+    unique_lock<mutex> unq_lock(m_mutex);
 
     string id = boost::lexical_cast<string>(this_thread::get_id());
-    BOOST_LOG_TRIVIAL(trace) << "thread id ["
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue "
+                             << "thread id ["
                              << id
                              << "] checking if queue is empty";
 
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue releasing unique lock...";
+
+    unq_lock.unlock();
     while(m_tasks.empty())
     {
         m_cancel_point.wait(TaskQueue::s_timeout);
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "thread id ["
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue "
+                             << "thread id ["
                              << id
                              << "] popping task from queue";
+
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue acquiring unique lock...";
+
+    unq_lock.lock();
 
     unique_ptr<Task> task = move(m_tasks.front());
     return task;
@@ -93,5 +107,7 @@ unique_ptr<Task> TaskQueue::pop(void)
 
 void TaskQueue::shutdown(void)
 {
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue shutdown started.";
     m_cancel_point.stop();
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue shutdown finished.";
 }

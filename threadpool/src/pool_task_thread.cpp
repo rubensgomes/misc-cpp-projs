@@ -48,7 +48,9 @@ PoolTaskThread::~PoolTaskThread()
 // synchronized
 void PoolTaskThread::operator()(void)
 {
-    lock_guard<mutex> lock(TaskThread::m_mutex);
+    BOOST_LOG_TRIVIAL(trace) << "PoolTaskThread entering operator() ..";
+
+    lock_guard<mutex> grd_lock(TaskThread::m_mutex);
 
     string thread_id = getThreadId();
 
@@ -84,7 +86,8 @@ void PoolTaskThread::operator()(void)
 
       task->run();
 
-      BOOST_LOG_TRIVIAL(trace) << "Task with id ["
+      BOOST_LOG_TRIVIAL(trace) << "PoolTaskThread "
+                               << "Task with id ["
                                << task->getId()
                                << "] is done and being destructed";
     }

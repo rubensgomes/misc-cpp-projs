@@ -51,22 +51,26 @@ void Task::run(void) const
 {
     try
     {
-        BOOST_LOG_TRIVIAL(trace) << "running task.";
+        BOOST_LOG_TRIVIAL(trace) << "Task running task.";
         do_run(); // private pure virtual
-        BOOST_LOG_TRIVIAL(trace) << "Notifying listeners.";
+        BOOST_LOG_TRIVIAL(trace) << "Task Notifying listeners.";
         notifyListeners();
     }
     catch(const ThreadCancellationException & ex)
     {
-        // TODO
+        BOOST_LOG_TRIVIAL(error) << "Task exception ["
+                                 << ex.what()
+                                 << "].";
     }
     catch(const std::exception & ex)
     {
-        // TODO
+        BOOST_LOG_TRIVIAL(error) << "Task exception ["
+                                 << ex.what()
+                                 << "].";
     }
     catch(...)
     {
-        // TODO
+        BOOST_LOG_TRIVIAL(error) << "Task some other error occurred.";
     }
 
 }
@@ -78,11 +82,15 @@ void Task::stopAll(void)
 
 void Task::addListener(unique_ptr<TaskListener> listener)
 {
+    BOOST_LOG_TRIVIAL(trace) << "Task adding listener.";
+
     m_listeners.push_back(move(listener));
 }
 
 void Task::removeListener(const unique_ptr<TaskListener> & listener)
 {
+    BOOST_LOG_TRIVIAL(trace) << "Task removing listener.";
+
     typedef vector<unique_ptr<TaskListener>>::iterator iter_t;
 
     for(iter_t it=m_listeners.begin();
@@ -98,6 +106,8 @@ void Task::removeListener(const unique_ptr<TaskListener> & listener)
 
 void Task::notifyListeners(void) const
 {
+    BOOST_LOG_TRIVIAL(trace) << "Task notifying listener.";
+
     for(auto & listener : m_listeners)
     {
         if(listener != nullptr)

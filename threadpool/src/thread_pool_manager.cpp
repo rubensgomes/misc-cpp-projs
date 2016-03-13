@@ -47,23 +47,23 @@ ThreadPoolManager::ThreadPoolManager(int total_threads)
 {
     string total = boost::lexical_cast<string>(total_threads);
 
-    BOOST_LOG_TRIVIAL(trace) << "launching ["
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager launching ["
                              << total
                              << "] task threads";
 
     for(int i=0; i<m_total_threads; i++)
     {
-        BOOST_LOG_TRIVIAL(trace) << "creating task thread w/index ["
+        BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager creating task thread w/index ["
                                  << i
                                  << "]";
 
         PoolTaskThread poolTaskThread;
 
-        BOOST_LOG_TRIVIAL(trace) << "launching new task thread ...";
+        BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager launching new task thread ...";
         unique_ptr<thread> t {new thread(poolTaskThread)};
 
         string id = boost::lexical_cast<string>(t->get_id());
-        BOOST_LOG_TRIVIAL(trace) << "launched thread id ["
+        BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager launched thread id ["
                                  << id
                                  << "]";
 
@@ -72,7 +72,7 @@ ThreadPoolManager::ThreadPoolManager(int total_threads)
     // poolTaskThread is now destroyed, but the
     // newly-created thread t has a copy, so this is OK
 
-    BOOST_LOG_TRIVIAL(trace) << "all task threads have been launched.";
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager all task threads have been launched.";
 }
 
 // private dtor
@@ -85,6 +85,8 @@ ThreadPoolManager::~ThreadPoolManager()
 
 void ThreadPoolManager::pushTask(unique_ptr<Task> task)
 {
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager entering pushTask...";
+
     if(m_is_shutdown)
     {
         throw new std::runtime_error(
@@ -92,6 +94,9 @@ void ThreadPoolManager::pushTask(unique_ptr<Task> task)
     }
 
     TaskQueue * task_queue = TaskQueue::instance();
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager pushing task to TaskQueue...";
+
     task_queue->push(move(task));
 }
 
@@ -99,7 +104,7 @@ int ThreadPoolManager::getTotalThreads(void) const
 {
     string total =
             boost::lexical_cast<string>(m_total_threads);
-    BOOST_LOG_TRIVIAL(trace) << "total threads ["
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager total threads ["
                              << total
                              << "] in pool";
 
@@ -109,7 +114,11 @@ int ThreadPoolManager::getTotalThreads(void) const
 // synchronized
 void ThreadPoolManager::shutdown(void)
 {
-    unique_lock<mutex> lock(m_mutex);
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager entering shutdown...";
+
+    unique_lock<mutex> unq_lock(m_mutex);
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager shutdown started";
 
     if(m_is_shutdown)
     {
@@ -117,25 +126,29 @@ void ThreadPoolManager::shutdown(void)
         return;
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager shutdown started";
-
-    BOOST_LOG_TRIVIAL(trace) << "stop all tasks";
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager stop all tasks";
 
     Task::stopAll();
 
-    BOOST_LOG_TRIVIAL(trace) << "interrupting task queue...";
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager shutting down task queue...";
 
     TaskQueue * queue = TaskQueue::instance();
     queue->shutdown();
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager is now sleeping for ["
+                             << SLEEP_WAIT_TIME
+                             << "] msecs";
 
     // sleep this thread to give chance for any other
     // running thread to get started
     chrono::milliseconds duration(SLEEP_WAIT_TIME);
     this_thread::sleep_for(duration);
 
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager clearing m_threads...";
+
     m_threads.clear();
 
-    BOOST_LOG_TRIVIAL(trace) << "all threads have stopped.";
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager all threads have stopped.";
 
     m_is_shutdown = true;
 }

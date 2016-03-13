@@ -14,6 +14,7 @@
 #define BOOST_TEST_MODULE ThreadPool Test Suite 
 #include <memory>
 
+#include <boost/log/trivial.hpp>
 #include <boost/test/included/unit_test.hpp> 
 
 #include "thread_pool_manager.hpp"
@@ -29,8 +30,17 @@ BOOST_AUTO_TEST_CASE(threadpool_first_test)
 {
     ThreadPoolManager * pool =
             ThreadPoolManager::instance();
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager test creating HelloTask...";
+
     std::unique_ptr<Task> task (new HelloTask());
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager test pushing task into pool..";
+
     pool->pushTask(move(task));
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager calling shutdown...";
+
     pool->shutdown();
 }
 
@@ -38,7 +48,16 @@ BOOST_AUTO_TEST_CASE(demandthread_first_test)
 {
     ThreadOnDemandManager * onDemand =
             ThreadOnDemandManager::instance();
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager test creating HelloTask...";
+
     std::unique_ptr<Task> task(new HelloTask());
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager test launching thread...";
+
     onDemand->launchThread(move(task));
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager calling shutdown...";
+
     onDemand->shutdown();
 }

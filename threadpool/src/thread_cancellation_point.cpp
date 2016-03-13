@@ -54,10 +54,12 @@ ThreadCancellationPoint::~ThreadCancellationPoint()
 void ThreadCancellationPoint::wait(
         const millisecs_t & timeout)
 {
-    unique_lock<mutex> lock(m_mutex);
+    BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint entering wait...";
+
+    unique_lock<mutex> unq_lock(m_mutex);
 
     if( m_is_stopped ||
-        (m_condition.wait_for(lock, timeout) == cv_status::no_timeout) )
+        (m_condition.wait_for(unq_lock, timeout) == cv_status::no_timeout) )
     {
         if(m_is_stopped)
         {
@@ -75,7 +77,11 @@ void ThreadCancellationPoint::wait(
 // synchronized
 void ThreadCancellationPoint::stop(void)
 {
+    BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint entering stop...";
+
     unique_lock<mutex> lock(m_mutex);
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint stop called.";
 
     m_is_stopped = true;
     m_condition.notify_all();
