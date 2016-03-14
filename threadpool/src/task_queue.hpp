@@ -59,7 +59,12 @@ public:
      * by placing the thread on "wait".  The thread
      * is "woken up" once a task is added to the queue
      * via the corresponding push(task) call.
-     *
+     * <p>
+     * ATTENTION:  This function will raise an exception
+     * when the TaskQueue is shutdown.  The user should
+     * have a try ... catch block around this function
+     * if handling the exception is necessary.
+     * <p>
      * @return pops out the next task in the FIFO queue
      * to be executed by a task thread.
      */
@@ -88,6 +93,7 @@ private:
     bool operator==(const TaskQueue &) const;
     bool operator!=(const TaskQueue &) const;
 
+    bool m_is_stopped;
     std::queue<std::unique_ptr<Task>> m_tasks;
     std::mutex m_mutex;
     std::condition_variable m_condition;

@@ -40,11 +40,9 @@ public:
     virtual ~PoolTaskThread();
 
     /**
-     * Overridden function.
-     *
      * Pulls and run tasks from the TaskQueue.
      */
-    virtual void operator()(void);
+    void operator()(void) override;
 
 private:
     // private copy assignment ctor

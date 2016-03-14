@@ -144,11 +144,7 @@ void ThreadPoolManager::shutdown(void)
     chrono::milliseconds duration(SLEEP_WAIT_TIME);
     this_thread::sleep_for(duration);
 
-    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager clearing m_threads...";
-
-    m_threads.clear();
-
-    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager all threads have stopped.";
+    BOOST_LOG_TRIVIAL(trace) << "ThreadPoolManager threads should now have stopped.";
 
     m_is_shutdown = true;
 }

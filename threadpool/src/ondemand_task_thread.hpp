@@ -52,12 +52,10 @@ public:
     virtual ~OnDemandTaskThread();
 
     /**
-     * Overridden function.
-     *
      * Callable method to be executed by the launching
      * thread using the on demand thread policy.
      */
-    virtual void operator()(void);
+    void operator()(void) override;
 
 private:
     // private ctor

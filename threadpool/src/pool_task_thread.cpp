@@ -50,7 +50,7 @@ void PoolTaskThread::operator()(void)
 {
     BOOST_LOG_TRIVIAL(trace) << "PoolTaskThread entering operator() ..";
 
-    lock_guard<mutex> grd_lock(TaskThread::m_mutex);
+    unique_lock<mutex> unq_lock(TaskThread::m_mutex);
 
     string thread_id = getThreadId();
 
@@ -74,22 +74,57 @@ void PoolTaskThread::operator()(void)
                                << thread_id
                                << "] pulling task from queue...";
 
-      // following call blocks on a wait until a task
-      // is available.
-      unique_ptr<Task> task = move(task_queue->pop());
+      unique_ptr<Task> task = nullptr;
+      try
+      {
+          // following call blocks on a wait until a task
+          // is available.
+          task = move(task_queue->pop());
+          BOOST_LOG_TRIVIAL(trace) << "PoolTaskThread id ["
+                                   << thread_id
+                                   << "] running task id ["
+                                   << task->getId()
+                                   << "]";
 
-      BOOST_LOG_TRIVIAL(trace) << "PoolTaskThread id ["
-                               << thread_id
-                               << "] running task id ["
-                               << task->getId()
-                               << "]";
+          task->run();
 
-      task->run();
+          BOOST_LOG_TRIVIAL(trace) << "PoolTaskThread "
+                                   << "Task with id ["
+                                   << task->getId()
+                                   << "] is done and being destructed";
+      }
+      catch(const ThreadCancellationException & ex)
+      {
+          BOOST_LOG_TRIVIAL(info) << "PoolTaskThread ThreadCancellationException ["
+                                  << ex.what()
+                                  << "].  This thread is now being stopped.";
+          unq_lock.unlock();
+          TaskThread::stop();
+      }
+      catch(const runtime_error & ex)
+      {
+          BOOST_LOG_TRIVIAL(info) << "PoolTaskThread runtime_error ["
+                                  << ex.what()
+                                  << "].  This thread is now being stopped.";
+          unq_lock.unlock();
+          TaskThread::stop();
+      }
+      catch(const exception & ex)
+      {
+          BOOST_LOG_TRIVIAL(info) << "PoolTaskThread exception ["
+                                  << ex.what()
+                                  << "].  This thread is now being stopped.";
+          unq_lock.unlock();
+          TaskThread::stop();
+      }
+      catch(...)
+      {
+          BOOST_LOG_TRIVIAL(info) << "PoolTaskThread some error occured."
+                                  << " This thread is now being stopped.";
+          unq_lock.unlock();
+          TaskThread::stop();
+      }
 
-      BOOST_LOG_TRIVIAL(trace) << "PoolTaskThread "
-                               << "Task with id ["
-                               << task->getId()
-                               << "] is done and being destructed";
     }
 }
 

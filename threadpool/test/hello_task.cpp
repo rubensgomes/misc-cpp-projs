@@ -55,7 +55,7 @@ void HelloTask::do_run() const
 
     millisecs_t timeout = millisecs_t(SLEEP_WAIT_TIME);
 
-    while(true)
+    while(! Task::isStopped())
     {
         // create an interrupt point
         this_thread::sleep_for(timeout);

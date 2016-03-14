@@ -24,6 +24,18 @@ using namespace std;
 double Task::s_counter = 0;
 bool Task::s_is_stopped = false;
 
+// static function
+void Task::stopAll(void)
+{
+    Task::s_is_stopped = true;
+}
+
+// static function
+bool Task::isStopped(void)
+{
+    return Task::s_is_stopped;
+}
+
 // ctor
 Task::Task()
 : m_id(++Task::s_counter),
@@ -51,7 +63,11 @@ void Task::run(void) const
 {
     try
     {
-        BOOST_LOG_TRIVIAL(trace) << "Task running task.";
+        BOOST_LOG_TRIVIAL(trace) << "Task ["
+                                 <<  this
+                                 << "] running task with id ["
+                                 << m_id
+                                 << "].";
         do_run(); // private pure virtual
         BOOST_LOG_TRIVIAL(trace) << "Task Notifying listeners.";
         notifyListeners();
@@ -73,11 +89,6 @@ void Task::run(void) const
         BOOST_LOG_TRIVIAL(error) << "Task some other error occurred.";
     }
 
-}
-
-void Task::stopAll(void)
-{
-    Task::s_is_stopped = true;
 }
 
 void Task::addListener(unique_ptr<TaskListener> listener)
@@ -106,6 +117,14 @@ void Task::removeListener(const unique_ptr<TaskListener> & listener)
 
 void Task::notifyListeners(void) const
 {
+    BOOST_LOG_TRIVIAL(trace) << "Task entering notifyListeners...";
+
+    if(m_listeners.empty())
+    {
+        BOOST_LOG_TRIVIAL(trace) << "Task no listeners to notify.";
+        return;
+    }
+
     BOOST_LOG_TRIVIAL(trace) << "Task notifying listener.";
 
     for(auto & listener : m_listeners)

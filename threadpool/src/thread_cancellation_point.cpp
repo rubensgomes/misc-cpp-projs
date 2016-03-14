@@ -61,13 +61,18 @@ void ThreadCancellationPoint::wait(
     if( m_is_stopped ||
         (m_condition.wait_for(unq_lock, timeout) == cv_status::no_timeout) )
     {
+        BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint inside wait if block...";
+
         if(m_is_stopped)
         {
+            BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint m_is_stopped is true...";
             m_is_stopped = false;
+            BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint throwing exception...";
             throw new ThreadCancellationException(
                  "thread cancellation stop has been called.");
         }
 
+        BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint m_is_stopped is false...";
         m_is_stopped = false;
         throw new ThreadCancellationException(
              "thread cancellation wait called with no timeout.");
@@ -83,6 +88,11 @@ void ThreadCancellationPoint::stop(void)
 
     BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint stop called.";
 
+    BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint setting stop flag to true.";
+
     m_is_stopped = true;
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint calling notifyAll...";
+
     m_condition.notify_all();
 }

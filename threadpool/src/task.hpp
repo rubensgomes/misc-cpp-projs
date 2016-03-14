@@ -36,6 +36,17 @@
 class Task : private boost::noncopyable
 {
 public:
+    /**
+     * Stops all tasks.  It sets a flag in attempt to
+     * break out this thread execution.
+     */
+    static void stopAll(void);
+
+    /**
+     * @return the status of the class static stop flag.
+     */
+    static bool isStopped(void);
+
     // ctor
     Task();
 
@@ -86,12 +97,6 @@ public:
      * @return my id.
      */
     double getId(void) const;
-
-    /**
-     * Stops all tasks.  It sets a flag in attempt to
-     * break out this thread execution.
-     */
-    static void stopAll(void);
 
 private:
     // private copy ctor

@@ -10,6 +10,7 @@
  * Date:  Jan 19, 2016
  * ********************************************************
  */
+#include <exception>
 #include <thread>
 
 #include <boost/log/trivial.hpp>
@@ -18,6 +19,7 @@
 #include "globals.hpp"
 #include "task_queue.hpp"
 #include "thread_cancellation_point.hpp"
+#include "thread_cancellation_exception.hpp"
 
 using namespace std;
 
@@ -40,7 +42,8 @@ TaskQueue * TaskQueue::instance()
 
 // private ctor
 TaskQueue::TaskQueue()
-: m_tasks(),
+: m_is_stopped(false),
+  m_tasks(),
   m_mutex(),
   m_condition(),
   m_cancel_point()
@@ -56,6 +59,12 @@ void TaskQueue::push(unique_ptr<Task> task)
     BOOST_LOG_TRIVIAL(trace) << "TaskQueue entering push...";
 
     lock_guard<mutex> grd_lock(m_mutex);
+
+    if(m_is_stopped)
+    {
+        throw new std::runtime_error(
+           "TaskQueue has been shutdown.  No more tasks are accepted.");
+    }
 
     string id = boost::lexical_cast<string>(this_thread::get_id());
     BOOST_LOG_TRIVIAL(trace) << "TaskQueue "
@@ -86,6 +95,8 @@ unique_ptr<Task> TaskQueue::pop(void)
 
     BOOST_LOG_TRIVIAL(trace) << "TaskQueue releasing unique lock...";
 
+    bool is_error = false;
+
     unq_lock.unlock();
     while(m_tasks.empty())
     {
@@ -98,7 +109,6 @@ unique_ptr<Task> TaskQueue::pop(void)
                              << "] popping task from queue";
 
     BOOST_LOG_TRIVIAL(trace) << "TaskQueue acquiring unique lock...";
-
     unq_lock.lock();
 
     unique_ptr<Task> task = move(m_tasks.front());
@@ -107,7 +117,12 @@ unique_ptr<Task> TaskQueue::pop(void)
 
 void TaskQueue::shutdown(void)
 {
+    BOOST_LOG_TRIVIAL(trace) << "TaskQueue entering shutdown...";
+
+    unique_lock<mutex> unq_lock(m_mutex);
+
     BOOST_LOG_TRIVIAL(trace) << "TaskQueue shutdown started.";
     m_cancel_point.stop();
+    m_is_stopped = true;
     BOOST_LOG_TRIVIAL(trace) << "TaskQueue shutdown finished.";
 }

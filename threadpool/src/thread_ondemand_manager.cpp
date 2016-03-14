@@ -57,6 +57,9 @@ void ThreadOnDemandManager::launchThread(unique_ptr<Task> task)
     OnDemandTaskThread taskThread(move(task));
     BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager launching new task thread ...";
     unique_ptr<thread> t {new thread(taskThread)};
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager thread with id["
+                             << t->get_id()
+                             << "] launched";
 }
 
 // synchronized
