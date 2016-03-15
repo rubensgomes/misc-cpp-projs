@@ -10,10 +10,11 @@
  * Date:  Jan 14, 2016
  * ********************************************************
  */
-#include <boost/log/trivial.hpp>
 
 #include "ondemand_task_thread.hpp"
 #include "thread_cancellation_exception.hpp"
+
+#include <boost/log/trivial.hpp>
 
 using namespace std;
 
@@ -52,7 +53,7 @@ void OnDemandTaskThread::operator() (void)
 
     lock_guard<mutex> grd_lock(TaskThread::m_mutex);
 
-    string thread_id = getThreadId();
+    string thread_id = TaskThread::getThreadId();
 
     BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread id ["
                              << thread_id

@@ -11,11 +11,13 @@
  * ********************************************************
  */
 
+#include "thread_ondemand_manager.hpp"
+#include "ondemand_task_thread.hpp"
+
 #include <boost/lexical_cast.hpp>
 #include <boost/log/trivial.hpp>
 
-#include "thread_ondemand_manager.hpp"
-#include "ondemand_task_thread.hpp"
+#include <stdexcept>
 
 using namespace std;
 
@@ -23,22 +25,31 @@ using namespace std;
 ThreadOnDemandManager * ThreadOnDemandManager::s_instance = nullptr;
 
 // *static* singleton instance method
-ThreadOnDemandManager * ThreadOnDemandManager::instance()
+ThreadOnDemandManager * ThreadOnDemandManager::instance(
+        unique_ptr<Task> task)
 {
     if(ThreadOnDemandManager::s_instance == nullptr)
     {
         ThreadOnDemandManager::s_instance =
-                new ThreadOnDemandManager();
+                new ThreadOnDemandManager(move(task));
     }
 
     return ThreadOnDemandManager::s_instance;
 }
 
 // private ctor
-ThreadOnDemandManager::ThreadOnDemandManager()
+ThreadOnDemandManager::ThreadOnDemandManager(unique_ptr<Task> task)
 : m_is_shutdown(false),
-  m_mutex()
+  m_mutex(),
+  m_task(move(task))
 {
+    OnDemandTaskThread taskThread(move(task));
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager launching new task thread ...";
+    m_thread = unique_ptr<thread>(new thread(taskThread));
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager thread with id["
+                             << m_thread->get_id()
+                             << "] launched";
+
     BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager ["
                              << this
                              << "] constructed";
@@ -50,16 +61,6 @@ ThreadOnDemandManager::~ThreadOnDemandManager()
     BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager ["
                              <<  this
                              << "] being destructed";
-}
-
-void ThreadOnDemandManager::launchThread(unique_ptr<Task> task)
-{
-    OnDemandTaskThread taskThread(move(task));
-    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager launching new task thread ...";
-    unique_ptr<thread> t {new thread(taskThread)};
-    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager thread with id["
-                             << t->get_id()
-                             << "] launched";
 }
 
 // synchronized

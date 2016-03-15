@@ -11,10 +11,10 @@
  * ********************************************************
  */
 
-#include <boost/log/trivial.hpp>
-
 #include "thread_cancellation_exception.hpp"
 #include "thread_cancellation_point.hpp"
+
+#include <boost/log/trivial.hpp>
 
 using namespace std;
 

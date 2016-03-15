@@ -13,17 +13,16 @@
 #ifndef THREADPOOL_THREAD_ONDEMAND_MANAGER_HPP_
 #define THREADPOOL_THREAD_ONDEMAND_MANAGER_HPP_
 
+#include "globals.hpp"
+#include "task.hpp"
+
+#include <boost/core/noncopyable.hpp>
+
 #include <condition_variable>
 #include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
-
-#include <boost/core/noncopyable.hpp>
-
-#include "globals.hpp"
-#include "task.hpp"
-
 
 /**
  * This class implements the OnDemand Thread Policy where
@@ -36,17 +35,11 @@ class ThreadOnDemandManager : private boost::noncopyable
 public:
     /**
      * Singleton instance method.
-     */
-    static ThreadOnDemandManager * instance();
-
-    /**
-     * Creates and launches a single thread to execute
-     * the given task.
      *
-     * @param a task to be run by the thread. The task
-     * ownership is moved to this class instance.
+     * @param the task to be run by a separate newly
+     * created thread (On Demand Thread strategy).
      */
-    void launchThread(std::unique_ptr<Task>);
+    static ThreadOnDemandManager * instance(std::unique_ptr<Task>);
 
     /**
      * Nicely stops the running thread.
@@ -58,7 +51,7 @@ public:
 
 private:
     // private ctor
-    ThreadOnDemandManager();
+    ThreadOnDemandManager(std::unique_ptr<Task>);
 
     // private dtor
     ~ThreadOnDemandManager();
@@ -75,6 +68,8 @@ private:
 
     bool m_is_shutdown;
     std::mutex m_mutex;
+    std::unique_ptr<Task> m_task;
+    std::unique_ptr<std::thread> m_thread;
 
     // Singleton
     static ThreadOnDemandManager * s_instance;

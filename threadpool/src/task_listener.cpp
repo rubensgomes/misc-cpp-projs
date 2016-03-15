@@ -10,9 +10,10 @@
  * Date:  Jan 22, 2016
  * ********************************************************
  */
-#include <boost/log/trivial.hpp>
 
 #include "task_listener.hpp"
+
+#include <boost/log/trivial.hpp>
 
 TaskListener::~TaskListener()
 {

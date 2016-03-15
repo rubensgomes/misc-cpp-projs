@@ -10,16 +10,17 @@
  * Date:  Jan 19, 2016
  * ********************************************************
  */
-#include <exception>
-#include <thread>
-
-#include <boost/log/trivial.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include "globals.hpp"
 #include "task_queue.hpp"
 #include "thread_cancellation_point.hpp"
 #include "thread_cancellation_exception.hpp"
+
+#include <boost/log/trivial.hpp>
+#include <boost/lexical_cast.hpp>
+
+#include <exception>
+#include <thread>
 
 using namespace std;
 

@@ -13,7 +13,7 @@
 #ifndef THREADPOOL_THREADCANCELLATIONEXCEPTION_HPP_
 #define THREADPOOL_THREADCANCELLATIONEXCEPTION_HPP_
 
-#include <exception>
+#include <stdexcept>
 #include <string>
 
 /**
@@ -26,12 +26,17 @@ class ThreadCancellationException : public std::runtime_error
 {
 public:
     // ctor
-    explicit ThreadCancellationException(const std::string & what)
+    ThreadCancellationException(const std::string & what)
         : std::runtime_error(what) {}
 
     // ctor
     ThreadCancellationException(const char * what)
         : std::runtime_error(what) {}
+
+    // ctor
+    ThreadCancellationException()
+        : std::runtime_error("") {}
+
 };
 
 #endif /* THREADPOOL_THREADCANCELLATIONEXCEPTION_HPP_ */

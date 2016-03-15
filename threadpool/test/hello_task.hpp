@@ -31,10 +31,10 @@ public:
     virtual ~HelloTask();
 
     // base class function
-    Task * clone(void) const;
+    Task * clone(void) const override;
 
     // base class function
-    void do_run(void) const;
+    void do_run(void) const override;
 };
 
 #endif /* THREADPOOL_TEST_HELLO_TASK_HPP_ */

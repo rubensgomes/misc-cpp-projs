@@ -13,16 +13,17 @@
 #ifndef THREADPOOL_TASK_QUEUE_HPP_
 #define THREADPOOL_TASK_QUEUE_HPP_
 
+#include "globals.hpp"
+#include "task.hpp"
+#include "thread_cancellation_point.hpp"
+
+#include <boost/noncopyable.hpp>
+
 #include <condition_variable>
 #include <memory>
 #include <mutex>
 #include <queue>
 
-#include <boost/noncopyable.hpp>
-
-#include "globals.hpp"
-#include "task.hpp"
-#include "thread_cancellation_point.hpp"
 
 /**
  * A place holder to manage tasks to be

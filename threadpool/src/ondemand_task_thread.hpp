@@ -13,11 +13,10 @@
 #ifndef THREADPOOL_ONDEMAND_TASK_THREAD_HPP_
 #define THREADPOOL_ONDEMAND_TASK_THREAD_HPP_
 
-#include <memory>
-
 #include "task.hpp"
 #include "task_thread.hpp"
 
+#include <memory>
 
 /**
  * A specialized TaskThread to be used by the OnDemand

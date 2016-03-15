@@ -13,17 +13,16 @@
 #ifndef THREADPOOL_THREAD_POOL_MANAGER_HPP_
 #define THREADPOOL_THREAD_POOL_MANAGER_HPP_
 
+#include "globals.hpp"
+#include "task.hpp"
+
+#include <boost/core/noncopyable.hpp>
+
 #include <condition_variable>
 #include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
-
-#include <boost/core/noncopyable.hpp>
-
-#include "globals.hpp"
-#include "task.hpp"
-
 
 /**
  * This class implements the Thread Pool Pattern.

@@ -13,7 +13,7 @@
 #ifndef THREADPOOL_THREAD_POLICY_ENUM_HPP_
 #define THREADPOOL_THREAD_POLICY_ENUM_HPP_
 
-enum ThreadPolicy
+enum class ThreadPolicy
 {
     THREAD_ONDEMAND,
     THREAD_POOL

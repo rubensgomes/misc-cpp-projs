@@ -10,29 +10,34 @@
  * Date:  Jan 16, 2016
  * ********************************************************
  */
-#include <exception>
-
-#include <boost/log/trivial.hpp>
 
 #include "globals.hpp"
 #include "task.hpp"
 #include "thread_cancellation_exception.hpp"
 
+#include <boost/log/trivial.hpp>
+
+#include <exception>
+
 using namespace std;
 
 // static variables
+mutex Task::s_mutex;
 double Task::s_counter = 0;
 bool Task::s_is_stopped = false;
 
-// static function
+
+// synchronized static function
 void Task::stopAll(void)
 {
+    lock_guard<mutex> grd_lock(Task::s_mutex);
     Task::s_is_stopped = true;
 }
 
-// static function
+// synchronized static function
 bool Task::isStopped(void)
 {
+    lock_guard<mutex> grd_lock(Task::s_mutex);
     return Task::s_is_stopped;
 }
 
@@ -88,7 +93,6 @@ void Task::run(void) const
     {
         BOOST_LOG_TRIVIAL(error) << "Task some other error occurred.";
     }
-
 }
 
 void Task::addListener(unique_ptr<TaskListener> listener)

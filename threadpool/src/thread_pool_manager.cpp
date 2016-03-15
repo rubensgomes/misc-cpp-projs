@@ -10,15 +10,16 @@
  * Date:  Jan 14, 2016
  * ********************************************************
  */
-#include <chrono>
-#include <thread>
-
-#include <boost/lexical_cast.hpp>
-#include <boost/log/trivial.hpp>
 
 #include "pool_task_thread.hpp"
 #include "task_queue.hpp"
 #include "thread_pool_manager.hpp"
+
+#include <boost/lexical_cast.hpp>
+#include <boost/log/trivial.hpp>
+
+#include <chrono>
+#include <thread>
 
 using namespace std;
 

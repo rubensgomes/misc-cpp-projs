@@ -10,13 +10,14 @@
  * Date:  Mar 3, 2016
  * ********************************************************
  */
-#include <exception>
-
-#include <boost/log/trivial.hpp>
 
 #include "pool_task_thread.hpp"
 #include "task_queue.hpp"
 #include "thread_cancellation_exception.hpp"
+
+#include <boost/log/trivial.hpp>
+
+#include <exception>
 
 using namespace std;
 

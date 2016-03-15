@@ -15,6 +15,8 @@
 
 #include <boost/noncopyable.hpp>
 
+#include <string>
+
 /**
  * An abstract base class that defines a type
  * containing the behaviour for a listener interested
@@ -33,6 +35,17 @@ public:
      * method when that task is completed.
      */
     virtual void notifyTaskDone() const = 0;
+
+    /**
+     * The client will get a call back on this
+     * method when that task is interrupted or stopped
+     * while it was being running or in the queue to
+     * be run.
+     *
+     * @param the message associated with the reasons
+     * for why the task was interrupted or stopped.
+     */
+    virtual void notifyTaskFailed(const std::string & msg) const = 0;
 
     /**
      * The equal comparison operator.

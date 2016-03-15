@@ -10,12 +10,12 @@
  * Date:  Jan 16, 2016
  * ********************************************************
  */
-#include <thread>
+#include "task_thread.hpp"
 
 #include <boost/log/trivial.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "task_thread.hpp"
+#include <thread>
 
 using namespace std;
 

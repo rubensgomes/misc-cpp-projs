@@ -13,13 +13,14 @@
 #ifndef THREADPOOL_TASK_HPP_
 #define THREADPOOL_TASK_HPP_
 
-#include <memory>
-#include <vector>
+#include "task_listener.hpp"
+#include "thread_cancellation_point.hpp"
 
 #include <boost/noncopyable.hpp>
 
-#include "task_listener.hpp"
-#include "thread_cancellation_point.hpp"
+#include <memory>
+#include <mutex>
+#include <vector>
 
 /**
  * An abstract base class that defines a
@@ -129,8 +130,8 @@ private:
     ThreadCancellationPoint m_cancel_point;
 
     // static variables
+    static std::mutex s_mutex;
     static double s_counter;
-    // when true it means task should stop.
     static bool s_is_stopped;
 };
 

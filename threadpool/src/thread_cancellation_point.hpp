@@ -13,10 +13,10 @@
 #ifndef THREADPOOL_THREADCANCELLATIONPOINT_HPP_
 #define THREADPOOL_THREADCANCELLATIONPOINT_HPP_
 
+#include "globals.hpp"
+
 #include <condition_variable>
 #include <mutex>
-
-#include "globals.hpp"
 
 /**
  * This class is used to interrupt and stop running
