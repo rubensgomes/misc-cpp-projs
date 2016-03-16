@@ -31,9 +31,6 @@ public:
     virtual ~HelloTask();
 
     // base class function
-    Task * clone(void) const override;
-
-    // base class function
     void do_run(void) const override;
 };
 

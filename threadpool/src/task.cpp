@@ -54,6 +54,19 @@ Task::Task()
                              << "] constructed.";
 }
 
+// move ctor
+Task::Task(Task && rhs)
+: m_id(rhs.m_id),
+  m_listeners(move(rhs.m_listeners)),
+  m_cancel_point(rhs.m_cancel_point)
+{
+    BOOST_LOG_TRIVIAL(trace) << "Task ["
+                             <<  this
+                             << "] with id ["
+                             << m_id
+                             << "] move constructed.";
+}
+
 // dtor
 Task::~Task()
 {
@@ -66,6 +79,10 @@ Task::~Task()
 
 void Task::run(void) const
 {
+    BOOST_LOG_TRIVIAL(trace) << "Task ["
+                             << this
+                             << "] entering run...";
+
     try
     {
         BOOST_LOG_TRIVIAL(trace) << "Task ["
@@ -97,14 +114,18 @@ void Task::run(void) const
 
 void Task::addListener(unique_ptr<TaskListener> listener)
 {
-    BOOST_LOG_TRIVIAL(trace) << "Task adding listener.";
+    BOOST_LOG_TRIVIAL(trace) << "Task ["
+                             << this
+                             << "] adding listener.";
 
     m_listeners.push_back(move(listener));
 }
 
 void Task::removeListener(const unique_ptr<TaskListener> & listener)
 {
-    BOOST_LOG_TRIVIAL(trace) << "Task removing listener.";
+    BOOST_LOG_TRIVIAL(trace) << "Task ["
+                             << this
+                             << "] removing listener.";
 
     typedef vector<unique_ptr<TaskListener>>::iterator iter_t;
 
@@ -121,7 +142,9 @@ void Task::removeListener(const unique_ptr<TaskListener> & listener)
 
 void Task::notifyListeners(void) const
 {
-    BOOST_LOG_TRIVIAL(trace) << "Task entering notifyListeners...";
+    BOOST_LOG_TRIVIAL(trace) << "Task ["
+                             << this
+                             << "] entering notifyListeners...";
 
     if(m_listeners.empty())
     {
@@ -143,5 +166,8 @@ void Task::notifyListeners(void) const
 
 double Task::getId(void) const
 {
+    BOOST_LOG_TRIVIAL(trace) << "Task ["
+                             << this
+                             << "] entering getId...";
     return m_id;
 }

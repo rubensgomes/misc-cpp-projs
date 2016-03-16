@@ -43,15 +43,26 @@ ThreadOnDemandManager::ThreadOnDemandManager(unique_ptr<Task> task)
   m_mutex(),
   m_task(move(task))
 {
-    OnDemandTaskThread taskThread(move(task));
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager being constructed...";
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager moving Task ["
+                             << this->m_task.get()
+                             << "]";
+
+    OnDemandTaskThread taskThread(move(this->m_task));
+
     BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager launching new task thread ...";
-    m_thread = unique_ptr<thread>(new thread(taskThread));
+
+    m_thread = unique_ptr<thread>(new thread(move(taskThread)));
+
     BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager thread with id["
                              << m_thread->get_id()
                              << "] launched";
 
     BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager ["
                              << this
+                             << "] Task ["
+                             << this->m_task.get()
                              << "] constructed";
 }
 

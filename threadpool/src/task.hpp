@@ -51,18 +51,11 @@ public:
     // ctor
     Task();
 
+    // move ctor
+    Task(Task &&);
+
     // dtor
     virtual ~Task();
-
-    /**
-     * The clone method is required in order to
-     * properly copy pointer containers (for example
-     * std::vector<std::unique_ptr<TaskListener>>)
-     * being used by this class.
-     *
-     * @return a clone instance.
-     */
-    virtual Task * clone(void) const = 0;
 
     /**
      * The run method should contain the code that is

@@ -36,17 +36,6 @@ HelloTask::~HelloTask()
                              << "] destructed";
 }
 
-// clone
-Task * HelloTask::clone(void) const
-{
-    BOOST_LOG_TRIVIAL(trace) << "HelloTask ["
-                             <<  this
-                             << "] is being cloned";
-
-    HelloTask * t = new HelloTask();
-    return t;
-}
-
 void HelloTask::do_run() const
 {
     BOOST_LOG_TRIVIAL(info) << "HelloTask ["

@@ -29,7 +29,7 @@ TaskThread::TaskThread()
                              << "] constructed.";
 }
 
-// private copy ctor
+// copy ctor
 TaskThread::TaskThread(const TaskThread & rhs)
 : m_is_stopped(rhs.m_is_stopped),
   m_mutex()
@@ -39,7 +39,19 @@ TaskThread::TaskThread(const TaskThread & rhs)
                              << "] copy constructed.";
 }
 
-// private dtor
+// move ctor
+TaskThread::TaskThread(TaskThread && rhs)
+: m_is_stopped(rhs.m_is_stopped),
+  m_mutex()
+{
+    // mutex cannot be copied/moved.
+    BOOST_LOG_TRIVIAL(trace) << "TaskThread ["
+                             << this
+                             << "] move constructed.";
+}
+
+
+// dtor
 TaskThread::~TaskThread()
 {
     BOOST_LOG_TRIVIAL(trace) << "TaskThread ["
@@ -49,6 +61,9 @@ TaskThread::~TaskThread()
 
 string TaskThread::getThreadId(void) const
 {
+    BOOST_LOG_TRIVIAL(trace) << "TaskThread ["
+                             << this
+                             << "] entering getThreadId...";
     string id = boost::lexical_cast<string>(this_thread::get_id());
     return id;
 }

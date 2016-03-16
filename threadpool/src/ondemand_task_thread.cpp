@@ -22,40 +22,52 @@ using namespace std;
 OnDemandTaskThread::OnDemandTaskThread(std::unique_ptr<Task> task)
 : m_task(move(task))
 {
-    BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread ["
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadTaskThread ["
                              << this
+                             << "] Task ["
+                             << this->m_task.get()
                              << "] constructed.";
 }
 
-// copy ctor
-OnDemandTaskThread::OnDemandTaskThread(const OnDemandTaskThread & rhs)
-: TaskThread(rhs),
-  m_task(rhs.m_task->clone())
+// move ctor
+OnDemandTaskThread::OnDemandTaskThread(OnDemandTaskThread && rhs)
+: m_task(move(rhs.m_task))
 {
-    // m_mutex is not copyable
-    BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread copy constructed ["
+    // m_mutex is not moveable
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadTaskThread move constructed ["
                              << this
+                             << "] Task ["
+                             << this->m_task.get()
                              << "]";
 }
 
 // dtor
 OnDemandTaskThread::~OnDemandTaskThread()
 {
-    BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread ["
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadTaskThread ["
                              << this
+                             << "] Task ["
+                             << this->m_task.get()
                              << "] being destructed.";
 }
 
 // synchronized
 void OnDemandTaskThread::operator() (void)
 {
-    BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread entering operator() ..";
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadTaskThread ["
+                             << this
+                             << "] entering operator() ..";
 
     lock_guard<mutex> grd_lock(TaskThread::m_mutex);
 
-    string thread_id = TaskThread::getThreadId();
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadTaskThread ["
+                             << this
+                             << "] requesting thread id...";
 
-    BOOST_LOG_TRIVIAL(trace) << "OnDemnadThread id ["
+
+    string thread_id = getThreadId();
+
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadTaskThread thread id ["
                              << thread_id
                              << "] inside operator()() ...";
 
@@ -73,7 +85,7 @@ void OnDemandTaskThread::operator() (void)
                              << m_task->getId()
                              << "]";
     m_task->run();
-    BOOST_LOG_TRIVIAL(trace) << "OnDemandTaskThread "
+    BOOST_LOG_TRIVIAL(trace) << "OnDemnadTaskThread "
                              << "Task with id ["
                              << m_task->getId()
                              << "] is done";

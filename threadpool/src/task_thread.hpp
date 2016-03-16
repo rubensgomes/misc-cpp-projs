@@ -32,6 +32,9 @@ public:
     // copy ctor
     TaskThread(const TaskThread &);
 
+    // move ctor
+    TaskThread(TaskThread &&);
+
     // dtor
     virtual ~TaskThread() = 0;
 

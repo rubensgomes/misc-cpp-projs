@@ -40,12 +40,16 @@ public:
      */
     OnDemandTaskThread(std::unique_ptr<Task>);
 
-    // copy ctor
+    // move ctor
     /**
-     * @param the OnDemandTaskThread to copy into the
-     * newly created instance.
+     * The current OnDemandTaskThread is moved into the
+     * newly created/launched thread.
+     *
+     * @param the OnDemandTaskThread to move into the
+     * newly created instance to be run from a separate
+     * thread.
      */
-    OnDemandTaskThread(const OnDemandTaskThread &);
+    OnDemandTaskThread(OnDemandTaskThread &&);
 
     // dtor
     virtual ~OnDemandTaskThread();
@@ -59,6 +63,9 @@ public:
 private:
     // private ctor
     OnDemandTaskThread();
+
+    // private copy ctor
+    OnDemandTaskThread(const OnDemandTaskThread &);
 
     // private copy assignment ctor
     OnDemandTaskThread & operator=(const OnDemandTaskThread &);
