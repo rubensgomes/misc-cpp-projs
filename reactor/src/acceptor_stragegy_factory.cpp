@@ -12,8 +12,16 @@
  */
 #include "acceptor_strategy_factory.hpp"
 
+#include <boost/log/trivial.hpp>
+
+namespace rg
+{
+
 AcceptorStrategyAbstractFactory::~AcceptorStrategyAbstractFactory()
 {
-    // TODO Auto-generated destructor stub
+    BOOST_LOG_TRIVIAL(trace) << "AcceptorStrategyAbstractFactory ["
+                             << this
+                             << "] being destructed.";
 }
 
+}

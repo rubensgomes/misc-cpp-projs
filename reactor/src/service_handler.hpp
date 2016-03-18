@@ -13,55 +13,58 @@
 #ifndef REACTOR_SERVICEHANDLER_HPP_
 #define REACTOR_SERVICEHANDLER_HPP_
 
-#include <task.hpp> // threadpool
-
 #include "event_handler.hpp"
 
-/**
- * This abstract class provides a generic interface for
- * processing services. Applications must customize this
- * class to perform a particular type of service.
- *
- * @author Rubens Gomes
- */
-class ServiceHandler: public EventHandler
+#include "task.hpp" // threadpool
+
+#include <memory>
+
+namespace rg
 {
-public:
-    // dtor
-    virtual ~ServiceHandler() = 0;
-
     /**
-     * The open method initializes the Service Handler with the
-     * IO Socket Handle used for the client-server communication
-     * protocol.
-     * <p>
-     * It is called by an Acceptor after a connection is
-     * established.  This must be done upfront before any
-     * other methods are called on the service handler.
+     * This abstract class provides a generic interface for
+     * processing services. Applications must customize this
+     * class to perform a particular type of service.
      *
-     * @param the socket handle
+     * @author Rubens Gomes
      */
-    virtual void open(const HANDLE &) = 0;
+    class ServiceHandler: public EventHandler
+    {
+    public:
+        // dtor
+        virtual ~ServiceHandler() = 0;
 
-    /**
-     * Closes this service handler by properly closing
-     * and releasing any IO handle connections.
-     */
-    virtual void close(void) = 0;
+        /**
+         * The open method initializes the Service Handler with the
+         * IO Socket Handle used for the client-server communication
+         * protocol.
+         * <p>
+         * It is called by an Acceptor after a connection is
+         * established.  This must be done upfront before any
+         * other methods are called on the service handler.
+         *
+         * @param the socket handle
+         */
+        virtual void open(const HANDLE &) = 0;
 
-    /**
-     * Implements the protocol (conversation) between client
-     * and server.
-     */
-    virtual void run(void) = 0;
+        /**
+         * Closes this service handler by properly closing
+         * and releasing any IO handle connections.
+         */
+        virtual void close(void) = 0;
 
-    /**
-     * Gets the task.
-     *
-     * @return the task to be executed when handling the service.
-     */
-    virtual Task * getTask(void) const = 0;
+        /**
+         * Implements the protocol (conversation) between client
+         * and server.
+         */
+        virtual void run(void) = 0;
 
-};
-
+        /**
+         * Gets the task.
+         *
+         * @return the task to be executed when handling the service.
+         */
+        virtual std::unique_ptr<Task> getTask(void) const = 0;
+    };
+}
 #endif /* REACTOR_SERVICEHANDLER_HPP_ */

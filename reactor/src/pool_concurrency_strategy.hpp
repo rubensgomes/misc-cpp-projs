@@ -15,24 +15,27 @@
 
 #include "concurrency_strategy.hpp"
 
-/**
- * The Thread Pool Concurrency Strategy uses a thread from the thread
- * pool to activate and run a service handler.
- *
- * @author Rubens Gomes
- */
-class ThreadPoolConcurrencyStrategy :
-        public ConcurrencyStrategy
+namespace rg
 {
-public:
-    // ctor
-    ThreadPoolConcurrencyStrategy();
 
-    // dtor
-    virtual ~ThreadPoolConcurrencyStrategy();
+    /**
+     * The Thread Pool Concurrency Strategy uses a thread from the thread
+     * pool to activate and run a service handler.
+     *
+     * @author Rubens Gomes
+     */
+    class ThreadPoolConcurrencyStrategy :
+            public ConcurrencyStrategy
+    {
+    public:
+        // ctor
+        ThreadPoolConcurrencyStrategy();
 
-    // Overriden Function
-    virtual void activate(const ServiceHandler &) const;
-};
+        // dtor
+        virtual ~ThreadPoolConcurrencyStrategy();
 
+        // Overriden Function
+        virtual void activate(const ServiceHandler &) const;
+    };
+}
 #endif /* REACTOR_THREADPOOLCONCURRENCYSTRATEGY_HPP_ */

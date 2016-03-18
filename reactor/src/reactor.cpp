@@ -12,8 +12,16 @@
  */
 #include "reactor.hpp"
 
+#include <boost/log/trivial.hpp>
+
+namespace rg
+{
+
 Reactor::~Reactor()
 {
-    // TODO Auto-generated destructor stub
+    BOOST_LOG_TRIVIAL(trace) << "Reactor ["
+                             << this
+                             << "] being destructed.";
 }
 
+}

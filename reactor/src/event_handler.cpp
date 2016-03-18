@@ -12,8 +12,12 @@
  */
 #include "event_handler.hpp"
 
+#include <boost/log/trivial.hpp>
+
 EventHandler::~EventHandler()
 {
-    // TODO Auto-generated destructor stub
+    BOOST_LOG_TRIVIAL(trace) << "EventHandler ["
+                             << this
+                             << "] being destructed.";
 }
 

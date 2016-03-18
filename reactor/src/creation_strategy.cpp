@@ -12,8 +12,16 @@
  */
 #include "creation_strategy.hpp"
 
+#include <boost/log/trivial.hpp>
+
+namespace rg
+{
+
 CreationStrategy::~CreationStrategy()
 {
-    // TODO Auto-generated destructor stub
+    BOOST_LOG_TRIVIAL(trace) << "CreationStrategy ["
+                             << this
+                             << "] being destructed.";
 }
 
+}

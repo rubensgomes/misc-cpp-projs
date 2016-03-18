@@ -13,35 +13,36 @@
 #ifndef REACTOR_CONCURRENCYSTRATEGY_HPP_
 #define REACTOR_CONCURRENCYSTRATEGY_HPP_
 
-#include <boost/noncopyable.hpp>
-
 #include "service_handler.hpp"
 
-/**
- * This interface provides the type of concurrency schemes
- * (thread on demand, thread pool).
- * <p>
- * The Acceptor uses a specific Concurrency Strategy to activate
- * Service Handlers to handle the client-server communication
- * protocol.
- * <p>
- *
- * @author Rubens Gomes
- */
-class ConcurrencyStrategy : private boost::noncopyable
+#include <boost/noncopyable.hpp>
+
+namespace rg
 {
-public:
-    // dtor
-    virtual ~ConcurrencyStrategy() = 0;
-
     /**
-     * Activates the given service handler by using the respective
-     * concurrency scheme.
+     * This interface provides the type of concurrency schemes
+     * (thread on demand, thread pool).
+     * <p>
+     * The Acceptor uses a specific Concurrency Strategy to activate
+     * Service Handlers to handle the client-server communication
+     * protocol.
+     * <p>
      *
-     * @param the service handler
+     * @author Rubens Gomes
      */
-    virtual void activate(const ServiceHandler &) = 0;
+    class ConcurrencyStrategy : private boost::noncopyable
+    {
+    public:
+        // dtor
+        virtual ~ConcurrencyStrategy() = 0;
 
-};
-
+        /**
+         * Activates the given service handler by using the respective
+         * concurrency scheme.
+         *
+         * @param the service handler
+         */
+        virtual void activate(const ServiceHandler &) = 0;
+    };
+}
 #endif /* REACTOR_CONCURRENCYSTRATEGY_HPP_ */

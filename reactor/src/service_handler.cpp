@@ -12,8 +12,13 @@
  */
 #include "service_handler.hpp"
 
+#include <boost/log/trivial.hpp>
+
+
 ServiceHandler::~ServiceHandler()
 {
-    // TODO Auto-generated destructor stub
+    BOOST_LOG_TRIVIAL(trace) << "ServiceHandler ["
+                             << this
+                             << "] being destructed.";
 }
 

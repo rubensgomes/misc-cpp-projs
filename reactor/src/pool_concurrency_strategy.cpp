@@ -10,15 +10,19 @@
  * Date:  Mar 7, 2016
  * ********************************************************
  */
-#include <boost/log/trivial.hpp>
-
-#include <stddef.h>
 
 // threadpool
-#include <thread_pool_manager.hpp>
-#include <task.hpp>
+#include "thread_pool_manager.hpp"
+#include "task.hpp"
 
 #include "pool_concurrency_strategy.hpp"
+
+#include <boost/log/trivial.hpp>
+
+using namespace std;
+
+namespace rg
+{
 
 ThreadPoolConcurrencyStrategy::ThreadPoolConcurrencyStrategy()
 {
@@ -37,20 +41,15 @@ ThreadPoolConcurrencyStrategy::~ThreadPoolConcurrencyStrategy()
 void ThreadPoolConcurrencyStrategy::activate(
         const ServiceHandler & handler) const
 {
+    unique_ptr<Task> task = handler.getTask();
+
     ThreadPoolManager * poolMgr =
             ThreadPoolManager::instance();
 
-    Task * task = handler.getTask();
+    BOOST_LOG_TRIVIAL(trace) << "PoolMgr pushing task id ["
+                             << task->getId()
+                             << "]";
+    poolMgr->pushTask(move(task));
+}
 
-    if(task == NULL)
-    {
-        BOOST_LOG_TRIVIAL(info) << "No task to be launched.";
-    }
-    else
-    {
-        BOOST_LOG_TRIVIAL(trace) << "PoolMgr pushing task id ["
-                                 << task->getId()
-                                 << "]";
-        poolMgr->pushTask(task);
-    }
 }

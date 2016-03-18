@@ -10,21 +10,24 @@
  * Date:  Mar 7, 2016
  * ********************************************************
  */
-#include <boost/log/trivial.hpp>
-
-#include <stddef.h>
+#include "ondemand_concurrency_strategy.hpp"
 
 // threadpool
-#include <thread_ondemand_manager.hpp>
-#include <task.hpp>
+#include "thread_ondemand_manager.hpp"
+#include "task.hpp"
 
-#include "ondemand_concurrency_strategy.hpp"
+#include <boost/log/trivial.hpp>
+
+using namespace std;
+
+namespace rg
+{
 
 ThreadOnDemandConcurrencyStrategy::ThreadOnDemandConcurrencyStrategy()
 {
     BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandConcurrencyStrategy ["
                              << this
-                             << "] being constructed.";
+                             << "] constructed.";
 }
 
 ThreadOnDemandConcurrencyStrategy::~ThreadOnDemandConcurrencyStrategy()
@@ -35,23 +38,15 @@ ThreadOnDemandConcurrencyStrategy::~ThreadOnDemandConcurrencyStrategy()
 }
 
 void ThreadOnDemandConcurrencyStrategy::activate(
-        const ServiceHandler & handler) const
+        const ServiceHandler & handler)
 {
-    ThreadOnDemandManager * onDemandMgr =
-            ThreadOnDemandManager::instance();
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandConcurrencyStrategy entering activate ...";
 
-    Task * task = handler.getTask();
+    unique_ptr<Task> task = handler.getTask();
 
-    if(task == NULL)
-    {
-        BOOST_LOG_TRIVIAL(info) << "No task to be launched.";
-    }
-    else
-    {
-        BOOST_LOG_TRIVIAL(trace) << "OnDemand launching task id ["
-                                 << task->getId()
-                                 << "]";
-        onDemandMgr->launchThread(task);
-    }
+    ThreadOnDemandManager::instance(move(task));
+
+    BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandConcurrencyStrategy activated";
+}
 
 }

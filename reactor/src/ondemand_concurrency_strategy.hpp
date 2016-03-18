@@ -15,25 +15,38 @@
 
 #include "concurrency_strategy.hpp"
 
-/**
- * The thread on demand concurrency strategy spawns a new
- * thread to activate and run a service handler.
- *
- * @author Rubens Gomes
- */
-class ThreadOnDemandConcurrencyStrategy :
-        public ConcurrencyStrategy
+namespace rg
 {
-public:
-    // ctor
-    ThreadOnDemandConcurrencyStrategy();
+    /**
+     * The thread on demand concurrency strategy spawns a new
+     * thread to activate and run a service handler.
+     *
+     * @author Rubens Gomes
+     */
+    class ThreadOnDemandConcurrencyStrategy :
+            public ConcurrencyStrategy
+    {
+    public:
+        // ctor
+        ThreadOnDemandConcurrencyStrategy();
 
-    // dtor
-    virtual ~ThreadOnDemandConcurrencyStrategy();
+        // dtor
+        virtual ~ThreadOnDemandConcurrencyStrategy();
 
-    // Overriden function
-    virtual void activate(const ServiceHandler &) const;
+        // Overriden function
+        void activate(const ServiceHandler &) override;
 
-};
+    private:
+        // private copy ctor
+        ThreadOnDemandConcurrencyStrategy(const ThreadOnDemandConcurrencyStrategy &);
 
+        // private copy assignment ctor
+        ThreadOnDemandConcurrencyStrategy & operator=(const ThreadOnDemandConcurrencyStrategy &);
+
+        // following operators are not used in this class
+        bool operator==(const ThreadOnDemandConcurrencyStrategy &) const;
+        bool operator!=(const ThreadOnDemandConcurrencyStrategy &) const;
+
+    };
+}
 #endif /* REACTOR_THREADONDEMANDCONCURRENCYSTRATEGY_HPP_ */

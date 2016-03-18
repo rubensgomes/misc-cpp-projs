@@ -12,8 +12,17 @@
  */
 #include "concurrency_strategy.hpp"
 
+#include <boost/log/trivial.hpp>
+
+namespace rg
+{
+
+
 ConcurrencyStrategy::~ConcurrencyStrategy()
 {
-    // TODO Auto-generated destructor stub
+    BOOST_LOG_TRIVIAL(trace) << "ConcurrencyStrategy ["
+                             << this
+                             << "] being destructed.";
 }
 
+}

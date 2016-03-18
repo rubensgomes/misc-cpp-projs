@@ -12,8 +12,16 @@
  */
 #include "acceptor.hpp"
 
+#include <boost/log/trivial.hpp>
+
+namespace rg
+{
+
 Acceptor::~Acceptor()
 {
-    // TODO Auto-generated destructor stub
+    BOOST_LOG_TRIVIAL(trace) << "Acceptor ["
+                             << this
+                             << "] being destructed.";
 }
 
+}

@@ -13,35 +13,39 @@
 #ifndef REACTOR_CREATIONSTRATEGY_HPP_
 #define REACTOR_CREATIONSTRATEGY_HPP_
 
-#include <boost/noncopyable.hpp>
-
 #include "service_handler.hpp"
 
-/**
- * This interface provides the behaviour to be implemented by a
- * strategy object resposinble for creating a service handler.
- *
- * @author Rubens Gomes
- */
-class CreationStrategy : private boost::noncopyable
+#include <boost/noncopyable.hpp>
+
+#include <memory>
+
+namespace rg
 {
-public:
-    // dtor
-    virtual ~CreationStrategy() = 0;
-
     /**
-     * Creates a service handler concrete object using the respective
-     * creation strategy.
+     * This interface provides the behaviour to be implemented by a
+     * strategy object resposinble for creating a service handler.
      *
-     * @param the I/O socket handle used for the client-
-     * server communication protocol.
-     * @return the service handler to handle the IO communication
-     * protocol with the client.
-     * @throws std::exception if it is not possible to
-     * instantiate a service handler class.
+     * @author Rubens Gomes
      */
-    virtual ServiceHandler * create(const HANDLE &) = 0;
+    class CreationStrategy : private boost::noncopyable
+    {
+    public:
+        // dtor
+        virtual ~CreationStrategy() = 0;
 
-};
+        /**
+         * Creates a service handler concrete object using the respective
+         * creation strategy.
+         *
+         * @param the I/O socket handle used for the client-
+         * server communication protocol.
+         * @return the service handler to handle the IO communication
+         * protocol with the client.
+         * @throws std::exception if it is not possible to
+         * instantiate a service handler class.
+         */
+        virtual std::unique_ptr<ServiceHandler> create(const HANDLE &) = 0;
+    };
+}
 
 #endif /* REACTOR_CREATIONSTRATEGY_HPP_ */
