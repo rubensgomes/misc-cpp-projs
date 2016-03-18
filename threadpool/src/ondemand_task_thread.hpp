@@ -18,70 +18,74 @@
 
 #include <memory>
 
-/**
- * A specialized TaskThread to be used by the OnDemand
- * Thread policy.  Tasks to be executed by a separate
- * thread must be transfered to the class constructor. The
- * class instance takes ownership of the task which is
- * submitted to run in its own thread.
- *
- * Use the singleton instance of the ThreadOnDemandManager
- * to create/launch/manage the OnDemandTaskThread.
- *
- * @author Rubens Gomes
- */
-class OnDemandTaskThread :  public TaskThread
+namespace rg
 {
-public:
-    // ctor
     /**
-     * @param task to be executed by the thread.  The
-     * task ownership is moved to this class instance.
-     */
-    OnDemandTaskThread(std::unique_ptr<Task>);
-
-    // move ctor
-    /**
-     * The current OnDemandTaskThread is moved into the
-     * newly created/launched thread.
+     * A specialized TaskThread to be used by the OnDemand
+     * Thread policy.  Tasks to be executed by a separate
+     * thread must be transfered to the class constructor. The
+     * class instance takes ownership of the task which is
+     * submitted to run in its own thread.
      *
-     * @param the OnDemandTaskThread to move into the
-     * newly created instance to be run from a separate
-     * thread.
+     * Use the singleton instance of the ThreadOnDemandManager
+     * to create/launch/manage the OnDemandTaskThread.
+     *
+     * @author Rubens Gomes
      */
-    OnDemandTaskThread(OnDemandTaskThread &&);
+    class OnDemandTaskThread :  public TaskThread
+    {
+    public:
+        // ctor
+        /**
+         * @param task to be executed by the thread.  The
+         * task ownership is moved to this class instance.
+         */
+        OnDemandTaskThread(std::unique_ptr<Task>);
 
-    // dtor
-    virtual ~OnDemandTaskThread();
+        // move ctor
+        /**
+         * The current OnDemandTaskThread is moved into the
+         * newly created/launched thread.
+         *
+         * @param the OnDemandTaskThread to move into the
+         * newly created instance to be run from a separate
+         * thread.
+         */
+        OnDemandTaskThread(OnDemandTaskThread &&);
 
-    /**
-     * Callable method to be executed by the launching
-     * thread using the on demand thread policy.
-     */
-    void operator()(void) override;
+        // dtor
+        virtual ~OnDemandTaskThread();
 
-private:
-    // private ctor
-    OnDemandTaskThread();
+        /**
+         * Callable method to be executed by the launching
+         * thread using the on demand thread policy.
+         */
+        void operator()(void) override;
 
-    // private copy ctor
-    OnDemandTaskThread(const OnDemandTaskThread &);
+    private:
+        // private ctor
+        OnDemandTaskThread();
 
-    // private copy assignment ctor
-    OnDemandTaskThread & operator=(const OnDemandTaskThread &);
+        // private copy ctor
+        OnDemandTaskThread(const OnDemandTaskThread &);
 
-    // following operators are not used in this class
-    bool operator==(const OnDemandTaskThread &) const;
-    bool operator!=(const OnDemandTaskThread &) const;
+        // private copy assignment ctor
+        OnDemandTaskThread & operator=(const OnDemandTaskThread &);
 
-    std::unique_ptr<Task> m_task;
-};
+        // following operators are not used in this class
+        bool operator==(const OnDemandTaskThread &) const;
+        bool operator!=(const OnDemandTaskThread &) const;
 
-// helper to deep copy unique_ptr
-template< class T >
-std::unique_ptr<T> copy_unique(const std::unique_ptr<T> & rhs)
-{
-    return rhs ? std::make_unique<T>( * rhs) : nullptr;
+        std::unique_ptr<Task> m_task;
+    };
+
+    // helper to deep copy unique_ptr
+    template< class T >
+    std::unique_ptr<T> copy_unique(const std::unique_ptr<T> & rhs)
+    {
+        return rhs ? std::make_unique<T>( * rhs) : nullptr;
+    }
+
 }
 
 #endif /* THREADPOOL_ONDEMAND_TASK_THREAD_HPP_ */

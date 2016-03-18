@@ -23,6 +23,10 @@
 
 using namespace std;
 
+namespace rg
+{
+
+
 // static singleton instance
 ThreadPoolManager * ThreadPoolManager::s_instance = nullptr;
 
@@ -150,3 +154,4 @@ void ThreadPoolManager::shutdown(void)
     m_is_shutdown = true;
 }
 
+}

@@ -20,6 +20,9 @@
 
 using namespace std;
 
+namespace rg
+{
+
 // ctor
 HelloTask::HelloTask()
 {
@@ -42,13 +45,16 @@ void HelloTask::do_run() const
                             <<  this
                             << "] run started";
 
-    millisecs_t timeout = millisecs_t(SLEEP_WAIT_TIME);
+    rg::millisecs_t timeout =
+            rg::millisecs_t(rg::SLEEP_WAIT_TIME);
 
-    while(! Task::isStopped())
+    while(! rg::Task::isStopped())
     {
         // create an interrupt point
         this_thread::sleep_for(timeout);
     }
 
     BOOST_LOG_TRIVIAL(info) << "HelloTask finished.";
+}
+
 }

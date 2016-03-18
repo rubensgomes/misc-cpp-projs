@@ -16,61 +16,64 @@
 #include <mutex>
 #include <string>
 
-/**
- * A Template Method Abstract Base class defining a type
- * to be used by threads that are created using either
- * the OnDemand or Thread Pool strategy.
- *
- * @author Rubens Gomes
- */
-class TaskThread
+namespace rg
 {
-public:
-    // ctor
-    TaskThread();
-
-    // copy ctor
-    TaskThread(const TaskThread &);
-
-    // move ctor
-    TaskThread(TaskThread &&);
-
-    // dtor
-    virtual ~TaskThread() = 0;
-
     /**
-     * Callable method to be executed by the launching
-     * thread.
+     * A Template Method Abstract Base class defining a type
+     * to be used by threads that are created using either
+     * the OnDemand or Thread Pool strategy.
+     *
+     * @author Rubens Gomes
      */
-    virtual void operator()(void) = 0;
+    class TaskThread
+    {
+    public:
+        // ctor
+        TaskThread();
 
-    /**
-     * Attempts to stop this thread.
-     */
-    virtual void stop(void);
+        // copy ctor
+        TaskThread(const TaskThread &);
 
-    /**
-     * @return the running status of this task thread.
-     */
-    virtual bool isStopped(void) const;
+        // move ctor
+        TaskThread(TaskThread &&);
 
-    /**
-     * @return my own task thread id
-     */
-    virtual std::string getThreadId(void) const;
+        // dtor
+        virtual ~TaskThread() = 0;
 
-protected:
-    bool m_is_stopped;
-    std::mutex m_mutex;
+        /**
+         * Callable method to be executed by the launching
+         * thread.
+         */
+        virtual void operator()(void) = 0;
 
-private:
-    // private copy assignment ctor
-    TaskThread & operator=(const TaskThread &);
+        /**
+         * Attempts to stop this thread.
+         */
+        virtual void stop(void);
 
-    // following operators are not used in this class
-    bool operator==(const TaskThread &) const;
-    bool operator!=(const TaskThread &) const;
+        /**
+         * @return the running status of this task thread.
+         */
+        virtual bool isStopped(void) const;
 
-};
+        /**
+         * @return my own task thread id
+         */
+        virtual std::string getThreadId(void) const;
+
+    protected:
+        bool m_is_stopped;
+        std::mutex m_mutex;
+
+    private:
+        // private copy assignment ctor
+        TaskThread & operator=(const TaskThread &);
+
+        // following operators are not used in this class
+        bool operator==(const TaskThread &) const;
+        bool operator!=(const TaskThread &) const;
+
+    };
+}
 
 #endif /* THREADPOOL_TASK_THREAD_HPP_ */

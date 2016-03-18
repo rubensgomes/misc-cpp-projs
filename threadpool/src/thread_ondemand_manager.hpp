@@ -24,55 +24,57 @@
 #include <thread>
 #include <vector>
 
-/**
- * This class implements the OnDemand Thread Policy where
- * a single thread is spawned to execute the given task.
- *
- * @author Rubens Gomes
- */
-class ThreadOnDemandManager : private boost::noncopyable
+namespace rg
 {
-public:
     /**
-     * Singleton instance method.
+     * This class implements the OnDemand Thread Policy where
+     * a single thread is spawned to execute the given task.
      *
-     * @param the task to be run by a separate newly
-     * created thread (On Demand Thread strategy).
+     * @author Rubens Gomes
      */
-    static ThreadOnDemandManager * instance(std::unique_ptr<Task>);
+    class ThreadOnDemandManager : private boost::noncopyable
+    {
+    public:
+        /**
+         * Singleton instance method.
+         *
+         * @param the task to be run by a separate newly
+         * created thread (On Demand Thread strategy).
+         */
+        static ThreadOnDemandManager * instance(std::unique_ptr<Task>);
 
-    /**
-     * Nicely stops the running thread.
-     *
-     * The user might call this function prior to exiting
-     * the application.
-     */
-    void shutdown(void);
+        /**
+         * Nicely stops the running thread.
+         *
+         * The user might call this function prior to exiting
+         * the application.
+         */
+        void shutdown(void);
 
-private:
-    // private ctor
-    ThreadOnDemandManager(std::unique_ptr<Task>);
+    private:
+        // private ctor
+        ThreadOnDemandManager(std::unique_ptr<Task>);
 
-    // private dtor
-    ~ThreadOnDemandManager();
+        // private dtor
+        ~ThreadOnDemandManager();
 
-    // private copy ctor
-    ThreadOnDemandManager(const ThreadOnDemandManager &);
+        // private copy ctor
+        ThreadOnDemandManager(const ThreadOnDemandManager &);
 
-    // private copy assignment
-    ThreadOnDemandManager & operator=(const ThreadOnDemandManager &);
+        // private copy assignment
+        ThreadOnDemandManager & operator=(const ThreadOnDemandManager &);
 
-    // following operators are not used in singletons
-    bool operator==(const ThreadOnDemandManager &) const;
-    bool operator!=(const ThreadOnDemandManager &) const;
+        // following operators are not used in singletons
+        bool operator==(const ThreadOnDemandManager &) const;
+        bool operator!=(const ThreadOnDemandManager &) const;
 
-    bool m_is_shutdown;
-    std::mutex m_mutex;
-    std::unique_ptr<Task> m_task;
-    std::unique_ptr<std::thread> m_thread;
+        bool m_is_shutdown;
+        std::mutex m_mutex;
+        std::unique_ptr<Task> m_task;
+        std::unique_ptr<std::thread> m_thread;
 
-    // Singleton
-    static ThreadOnDemandManager * s_instance;
-};
-
+        // Singleton
+        static ThreadOnDemandManager * s_instance;
+    };
+}
 #endif /* THREADPOOL_THREAD_ONDEMAND_MANAGER_HPP_ */

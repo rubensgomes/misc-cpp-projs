@@ -15,23 +15,27 @@
 
 #include "task.hpp"
 
-/**
- * A simple Hello World task used for testing
- * the thread code.
- *
- * @author Rubens Gomes
- */
-class HelloTask: public Task
+namespace rg
 {
-public:
-    // c-tor
-    HelloTask();
 
-    // d-tor
-    virtual ~HelloTask();
+    /**
+     * A simple Hello World task used for testing
+     * the thread code.
+     *
+     * @author Rubens Gomes
+     */
+    class HelloTask: public Task
+    {
+    public:
+        // c-tor
+        HelloTask();
 
-    // base class function
-    void do_run(void) const override;
-};
+        // d-tor
+        virtual ~HelloTask();
 
+        // base class function
+        void do_run(void) const override;
+    };
+
+}
 #endif /* THREADPOOL_TEST_HELLO_TASK_HPP_ */

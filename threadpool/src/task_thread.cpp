@@ -19,6 +19,10 @@
 
 using namespace std;
 
+namespace rg
+{
+
+
 // ctor
 TaskThread::TaskThread()
 : m_is_stopped(false),
@@ -97,4 +101,4 @@ bool TaskThread::isStopped(void) const
     return m_is_stopped;
 }
 
-
+}

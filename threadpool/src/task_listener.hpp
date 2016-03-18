@@ -17,63 +17,66 @@
 
 #include <string>
 
-/**
- * An abstract base class that defines a type
- * containing the behaviour for a listener interested
- * in knowing when its task is done running.
- *
- * @author Rubens Gomes
- */
-class TaskListener : private boost::noncopyable
+namespace rg
 {
-public:
-    // dtor
-    virtual ~TaskListener() = 0;
-
     /**
-     * The client will get a call back on this
-     * method when that task is completed.
-     */
-    virtual void notifyTaskDone() const = 0;
-
-    /**
-     * The client will get a call back on this
-     * method when that task is interrupted or stopped
-     * while it was being running or in the queue to
-     * be run.
+     * An abstract base class that defines a type
+     * containing the behaviour for a listener interested
+     * in knowing when its task is done running.
      *
-     * @param the message associated with the reasons
-     * for why the task was interrupted or stopped.
+     * @author Rubens Gomes
      */
-    virtual void notifyTaskFailed(const std::string & msg) const = 0;
+    class TaskListener: private boost::noncopyable
+    {
+    public:
+        // dtor
+        virtual ~TaskListener() = 0;
 
-    /**
-     * The equal comparison operator.
-     *
-     * @param the object to compare to.
-     * @return true if this and the other object have the
-     * same address; false, otherwise.
-     */
-    bool operator==(const TaskListener &) const;
+        /**
+         * The client will get a call back on this
+         * method when that task is completed.
+         */
+        virtual void notifyTaskDone() const = 0;
 
-    /**
-     * the not equal comparison operator.
-     *
-     * @param the object to compare to.
-     * @return true if this and the other object have
-     * different address; false, otherwise.
-     */
-    bool operator!=(const TaskListener &) const;
+        /**
+         * The client will get a call back on this
+         * method when that task is interrupted or stopped
+         * while it was being running or in the queue to
+         * be run.
+         *
+         * @param the message associated with the reasons
+         * for why the task was interrupted or stopped.
+         */
+        virtual void notifyTaskFailed(const std::string &) const = 0;
 
-private:
-    // private ctor
-    TaskListener();
+        /**
+         * The equal comparison operator.
+         *
+         * @param the object to compare to.
+         * @return true if this and the other object have the
+         * same address; false, otherwise.
+         */
+        bool operator==(const TaskListener &) const;
 
-    // private copy ctor
-    TaskListener(const TaskListener &);
+        /**
+         * the not equal comparison operator.
+         *
+         * @param the object to compare to.
+         * @return true if this and the other object have
+         * different address; false, otherwise.
+         */
+        bool operator!=(const TaskListener &) const;
 
-    // private copy assignment ctor
-    TaskListener & operator=(const TaskListener &);
-};
+    private:
+        // private ctor
+        TaskListener();
+
+        // private copy ctor
+        TaskListener(const TaskListener &);
+
+        // private copy assignment ctor
+        TaskListener & operator=(const TaskListener &);
+    };
+}
 
 #endif /* THREADPOOL_TASK_DONE_LISTENER_HPP_ */

@@ -15,42 +15,46 @@
 
 #include "task_thread.hpp"
 
-/**
- * A specialized TaskThread to be used by the Thread Pool
- * policy.  Tasks to be executed by a thread in the pool
- * must be added to the TaskQueue.  Once a task is
- * available in the TaskQueue that task is executed
- * by one of the threads available in the pool.
- *
- * Use the singleton instance of the ThreadPoolManager to
- * create/launch/manage the PoolTaskThread.
- *
- * @author Rubens Gomes
- */
-class PoolTaskThread: public TaskThread
+namespace rg
 {
-public:
-    // ctor
-    PoolTaskThread();
-
-    // copy ctor
-    PoolTaskThread(const PoolTaskThread &);
-
-    // dtor
-    virtual ~PoolTaskThread();
-
     /**
-     * Pulls and run tasks from the TaskQueue.
+     * A specialized TaskThread to be used by the Thread Pool
+     * policy.  Tasks to be executed by a thread in the pool
+     * must be added to the TaskQueue.  Once a task is
+     * available in the TaskQueue that task is executed
+     * by one of the threads available in the pool.
+     *
+     * Use the singleton instance of the ThreadPoolManager to
+     * create/launch/manage the PoolTaskThread.
+     *
+     * @author Rubens Gomes
      */
-    void operator()(void) override;
+    class PoolTaskThread: public TaskThread
+    {
+    public:
+        // ctor
+        PoolTaskThread();
 
-private:
-    // private copy assignment ctor
-    PoolTaskThread & operator=(const PoolTaskThread &);
+        // copy ctor
+        PoolTaskThread(const PoolTaskThread &);
 
-    // following operators are not used in this class
-    bool operator==(const PoolTaskThread &) const;
-    bool operator!=(const PoolTaskThread &) const;
-};
+        // dtor
+        virtual ~PoolTaskThread();
+
+        /**
+         * Pulls and run tasks from the TaskQueue.
+         */
+        void operator()(void) override;
+
+    private:
+        // private copy assignment ctor
+        PoolTaskThread & operator=(const PoolTaskThread &);
+
+        // following operators are not used in this class
+        bool operator==(const PoolTaskThread &) const;
+        bool operator!=(const PoolTaskThread &) const;
+    };
+
+}
 
 #endif /* THREADPOOL_POOL_TASK_THREAD_HPP_ */

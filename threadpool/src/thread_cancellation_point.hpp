@@ -18,53 +18,55 @@
 #include <condition_variable>
 #include <mutex>
 
-/**
- * This class is used to interrupt and stop running
- * threads.
- *
- * @author Rubens Gomes
- */
-class ThreadCancellationPoint
+namespace rg
 {
-public:
-    // ctor
-    ThreadCancellationPoint();
-
-    // copy ctor
-    ThreadCancellationPoint(const ThreadCancellationPoint &);
-
-    // dtor
-    virtual ~ThreadCancellationPoint();
-
     /**
-     * Uses a thread condition variable to cause
-     * the running thread to wait for some time.
+     * This class is used to interrupt and stop running
+     * threads.
      *
-     * @param the timeout to wait.
-     * @throws ThreadCancellationException if stop has been
-     * called, or if the time is std::cv_status::no_timeout
+     * @author Rubens Gomes
      */
-    void wait(const millisecs_t &);
+    class ThreadCancellationPoint
+    {
+    public:
+        // ctor
+        ThreadCancellationPoint();
 
-    /**
-     * Changes the stop flag to true to allow any threads
-     * in wait state to raise an exception.  The exception
-     * allows handlers to properly clean up any resources
-     * prior to stopping the running thread.
-     */
-    void stop(void);
+        // copy ctor
+        ThreadCancellationPoint(const ThreadCancellationPoint &);
 
-private:
-    // private copy assignment
-    ThreadCancellationPoint& operator=(const ThreadCancellationPoint &);
+        // dtor
+        virtual ~ThreadCancellationPoint();
 
-    // following operators are not used in this class
-    bool operator==(const ThreadCancellationPoint &) const;
-    bool operator!=(const ThreadCancellationPoint &) const;
+        /**
+         * Uses a thread condition variable to cause
+         * the running thread to wait for some time.
+         *
+         * @param the timeout to wait.
+         * @throws ThreadCancellationException if stop has been
+         * called, or if the time is std::cv_status::no_timeout
+         */
+        void wait(const millisecs_t &);
 
-    bool m_is_stopped;
-    std::mutex m_mutex;
-    std::condition_variable m_condition;
-};
+        /**
+         * Changes the stop flag to true to allow any threads
+         * in wait state to raise an exception.  The exception
+         * allows handlers to properly clean up any resources
+         * prior to stopping the running thread.
+         */
+        void stop(void);
 
+    private:
+        // private copy assignment
+        ThreadCancellationPoint& operator=(const ThreadCancellationPoint &);
+
+        // following operators are not used in this class
+        bool operator==(const ThreadCancellationPoint &) const;
+        bool operator!=(const ThreadCancellationPoint &) const;
+
+        bool m_is_stopped;
+        std::mutex m_mutex;
+        std::condition_variable m_condition;
+    };
+}
 #endif /* THREADPOOL_THREADCANCELLATIONPOINT_HPP_ */

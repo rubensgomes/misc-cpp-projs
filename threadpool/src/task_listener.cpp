@@ -15,6 +15,9 @@
 
 #include <boost/log/trivial.hpp>
 
+namespace rg
+{
+
 TaskListener::~TaskListener()
 {
     BOOST_LOG_TRIVIAL(trace) << "TaskListener ["
@@ -40,4 +43,6 @@ bool TaskListener::operator!=(const TaskListener & rhs) const
 
     bool status = !(this == &rhs);
     return status;
+}
+
 }

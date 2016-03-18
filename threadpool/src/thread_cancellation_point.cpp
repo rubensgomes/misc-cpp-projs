@@ -18,6 +18,10 @@
 
 using namespace std;
 
+namespace rg
+{
+
+
 // ctor
 ThreadCancellationPoint::ThreadCancellationPoint()
 : m_is_stopped(false),
@@ -95,4 +99,6 @@ void ThreadCancellationPoint::stop(void)
     BOOST_LOG_TRIVIAL(trace) << "ThreadCancellationPoint calling notifyAll...";
 
     m_condition.notify_all();
+}
+
 }

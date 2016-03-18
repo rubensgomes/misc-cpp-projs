@@ -16,27 +16,29 @@
 #include <stdexcept>
 #include <string>
 
-/**
- * An exception that is raised to be used when
- * stopping a running thread.
- *
- * @author Rubens Gomes
- */
-class ThreadCancellationException : public std::runtime_error
+namespace rg
 {
-public:
-    // ctor
-    ThreadCancellationException(const std::string & what)
-        : std::runtime_error(what) {}
+    /**
+     * An exception that is raised to be used when
+     * stopping a running thread.
+     *
+     * @author Rubens Gomes
+     */
+    class ThreadCancellationException : public std::runtime_error
+    {
+    public:
+        // ctor
+        ThreadCancellationException(const std::string & what)
+            : std::runtime_error(what) {}
 
-    // ctor
-    ThreadCancellationException(const char * what)
-        : std::runtime_error(what) {}
+        // ctor
+        ThreadCancellationException(const char * what)
+            : std::runtime_error(what) {}
 
-    // ctor
-    ThreadCancellationException()
-        : std::runtime_error("") {}
+        // ctor
+        ThreadCancellationException()
+            : std::runtime_error("") {}
 
-};
-
+    };
+}
 #endif /* THREADPOOL_THREADCANCELLATIONEXCEPTION_HPP_ */

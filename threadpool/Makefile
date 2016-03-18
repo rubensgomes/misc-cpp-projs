@@ -49,7 +49,7 @@ clean:
 	$(RM) -fr $(DEP_DIR)
 	$(RM) -f $(LIBRARY)
 
-install: $(LIBRARY)
+install: $(LIBRARY) uninstall
 	@if $(TEST) ! -d $(INSTALL_DIR)/include/threadpool; then \
 		$(MDIR) -p 755 -v $(INSTALL_DIR)/include/threadpool; \
 	fi

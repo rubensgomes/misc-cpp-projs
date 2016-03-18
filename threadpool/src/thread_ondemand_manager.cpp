@@ -21,6 +21,10 @@
 
 using namespace std;
 
+namespace rg
+{
+
+
 // *static* singleton instance
 ThreadOnDemandManager * ThreadOnDemandManager::s_instance = nullptr;
 
@@ -94,4 +98,6 @@ void ThreadOnDemandManager::shutdown(void)
     BOOST_LOG_TRIVIAL(trace) << "ThreadOnDemandManager all threads have stopped.";
 
     m_is_shutdown = true;
+}
+
 }

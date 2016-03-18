@@ -21,6 +21,10 @@
 
 using namespace std;
 
+namespace rg
+{
+
+
 // static variables
 mutex Task::s_mutex;
 double Task::s_counter = 0;
@@ -170,4 +174,6 @@ double Task::getId(void) const
                              << this
                              << "] entering getId...";
     return m_id;
+}
+
 }

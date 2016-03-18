@@ -18,6 +18,9 @@
 
 using namespace std;
 
+namespace rg
+{
+
 // ctor
 OnDemandTaskThread::OnDemandTaskThread(std::unique_ptr<Task> task)
 : m_task(move(task))
@@ -91,3 +94,4 @@ void OnDemandTaskThread::operator() (void)
                              << "] is done";
 }
 
+}

@@ -25,84 +25,87 @@
 #include <queue>
 
 
-/**
- * A place holder to manage tasks to be
- * run by the corresponding task thread in
- * the thread pool.
- *
- * NOTE: This class was created to fix a
- * circular dependency that existed between
- * TaskThread and ThreadPool.
- *
- * @author Rubens Gomes
- */
-class TaskQueue : private boost::noncopyable
+namespace rg
 {
-public:
     /**
-     * Singleton instance method.
-     */
-    static TaskQueue * instance();
-
-    /**
-     * Add a task to the task FIFO queue.  Once a task
-     * is called it calls notify_all to unblock any thread
-     * that is pending on a task to be available.
+     * A place holder to manage tasks to be
+     * run by the corresponding task thread in
+     * the thread pool.
      *
-     * @param a task to be run by a thread in the pool.
-     * The task ownership is moved to the queue.
+     * NOTE: This class was created to fix a
+     * circular dependency that existed between
+     * TaskThread and ThreadPool.
+     *
+     * @author Rubens Gomes
      */
-    void push(std::unique_ptr<Task>);
+    class TaskQueue : private boost::noncopyable
+    {
+    public:
+        /**
+         * Singleton instance method.
+         */
+        static TaskQueue * instance();
 
-    /**
-     * Pops a task from the queue.  If no task is
-     * available this call blocks the current thread
-     * by placing the thread on "wait".  The thread
-     * is "woken up" once a task is added to the queue
-     * via the corresponding push(task) call.
-     * <p>
-     * ATTENTION:  This function will raise an exception
-     * when the TaskQueue is shutdown.  The user should
-     * have a try ... catch block around this function
-     * if handling the exception is necessary.
-     * <p>
-     * @return pops out the next task in the FIFO queue
-     * to be executed by a task thread.
-     */
-    std::unique_ptr<Task> pop(void);
+        /**
+         * Add a task to the task FIFO queue.  Once a task
+         * is called it calls notify_all to unblock any thread
+         * that is pending on a task to be available.
+         *
+         * @param a task to be run by a thread in the pool.
+         * The task ownership is moved to the queue.
+         */
+        void push(std::unique_ptr<Task>);
 
-    /**
-     * Shuts down the queue by completely clearing
-     * all the tasks stored in the queue.
-     */
-    void shutdown(void);
+        /**
+         * Pops a task from the queue.  If no task is
+         * available this call blocks the current thread
+         * by placing the thread on "wait".  The thread
+         * is "woken up" once a task is added to the queue
+         * via the corresponding push(task) call.
+         * <p>
+         * ATTENTION:  This function will raise an exception
+         * when the TaskQueue is shutdown.  The user should
+         * have a try ... catch block around this function
+         * if handling the exception is necessary.
+         * <p>
+         * @return pops out the next task in the FIFO queue
+         * to be executed by a task thread.
+         */
+        std::unique_ptr<Task> pop(void);
 
-private:
-    // private ctor
-    TaskQueue();
+        /**
+         * Shuts down the queue by completely clearing
+         * all the tasks stored in the queue.
+         */
+        void shutdown(void);
 
-    // private copy ctor
-    TaskQueue(const TaskQueue &);
+    private:
+        // private ctor
+        TaskQueue();
 
-    // private dtor
-    ~TaskQueue();
+        // private copy ctor
+        TaskQueue(const TaskQueue &);
 
-    // private copy assignment ctor
-    TaskQueue & operator=(const TaskQueue &);
+        // private dtor
+        ~TaskQueue();
 
-    // following operators are not used in this class
-    bool operator==(const TaskQueue &) const;
-    bool operator!=(const TaskQueue &) const;
+        // private copy assignment ctor
+        TaskQueue & operator=(const TaskQueue &);
 
-    bool m_is_stopped;
-    std::queue<std::unique_ptr<Task>> m_tasks;
-    std::mutex m_mutex;
-    std::condition_variable m_condition;
-    ThreadCancellationPoint m_cancel_point;
+        // following operators are not used in this class
+        bool operator==(const TaskQueue &) const;
+        bool operator!=(const TaskQueue &) const;
 
-    // Singleton
-    static TaskQueue * s_instance;
-    static millisecs_t s_timeout;
-};
+        bool m_is_stopped;
+        std::queue<std::unique_ptr<Task>> m_tasks;
+        std::mutex m_mutex;
+        std::condition_variable m_condition;
+        ThreadCancellationPoint m_cancel_point;
+
+        // Singleton
+        static TaskQueue * s_instance;
+        static millisecs_t s_timeout;
+    };
+}
 
 #endif /* THREADPOOL_TASK_QUEUE_HPP_ */

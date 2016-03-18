@@ -13,10 +13,12 @@
 #ifndef THREADPOOL_THREAD_POLICY_ENUM_HPP_
 #define THREADPOOL_THREAD_POLICY_ENUM_HPP_
 
-enum class ThreadPolicy
+namespace rg
 {
-    THREAD_ONDEMAND,
-    THREAD_POOL
-};
-
+    enum class ThreadPolicy
+    {
+        THREAD_ONDEMAND,
+        THREAD_POOL
+    };
+}
 #endif /* THREADPOOL_THREAD_POLICY_ENUM_HPP_ */

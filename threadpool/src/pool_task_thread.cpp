@@ -21,6 +21,9 @@
 
 using namespace std;
 
+namespace rg
+{
+
 // ctor
 PoolTaskThread::PoolTaskThread()
 {
@@ -129,3 +132,4 @@ void PoolTaskThread::operator()(void)
     }
 }
 
+}

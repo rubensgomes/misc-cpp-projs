@@ -24,6 +24,9 @@
 
 using namespace std;
 
+namespace rg
+{
+
 // static singleton instance
 TaskQueue * TaskQueue::s_instance = nullptr;
 
@@ -126,4 +129,6 @@ void TaskQueue::shutdown(void)
     m_cancel_point.stop();
     m_is_stopped = true;
     BOOST_LOG_TRIVIAL(trace) << "TaskQueue shutdown finished.";
+}
+
 }
