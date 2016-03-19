@@ -17,8 +17,6 @@
 
 #include <boost/noncopyable.hpp>
 
-#include <memory>
-
 namespace rg
 {
     /**
@@ -37,14 +35,12 @@ namespace rg
          * Creates a service handler concrete object using the respective
          * creation strategy.
          *
-         * @param the I/O socket handle used for the client-
-         * server communication protocol.
          * @return the service handler to handle the IO communication
          * protocol with the client.
          * @throws std::exception if it is not possible to
          * instantiate a service handler class.
          */
-        virtual std::unique_ptr<ServiceHandler> create(const HANDLE &) = 0;
+        virtual ServiceHandler * create(void) = 0;
     };
 }
 

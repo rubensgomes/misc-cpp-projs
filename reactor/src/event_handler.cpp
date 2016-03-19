@@ -14,6 +14,9 @@
 
 #include <boost/log/trivial.hpp>
 
+namespace rg
+{
+
 EventHandler::~EventHandler()
 {
     BOOST_LOG_TRIVIAL(trace) << "EventHandler ["
@@ -21,3 +24,4 @@ EventHandler::~EventHandler()
                              << "] being destructed.";
 }
 
+}

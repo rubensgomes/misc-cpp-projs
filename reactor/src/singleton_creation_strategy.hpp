@@ -15,6 +15,7 @@
 
 #include "creation_strategy.hpp"
 
+#include <iostream>
 #include <memory>
 
 namespace rg
@@ -25,7 +26,8 @@ namespace rg
      *
      * @author Rubens Gomes
      */
-    class SingletonCreationStrategy: public CreationStrategy
+    template <typename T>
+    class SingletonCreationStrategy : public CreationStrategy
     {
     public:
         // ctor
@@ -35,11 +37,15 @@ namespace rg
         virtual ~SingletonCreationStrategy();
 
         // Overriden Function
-        template<class T>
-        std::unique_ptr<ServiceHandler> create(const HANDLE &) override;
+        ServiceHandler * create(void) override;
 
     private:
+        std::unique_ptr<ServiceHandler> do_create(void);
+
         std::unique_ptr<ServiceHandler> m_handler;
     };
+
+    template <typename T>
+    std::ostream & operator << (std::ostream &, const SingletonCreationStrategy<T> &);
 }
 #endif /* REACTOR_SINGLETON_CREATION_STRATEGY_HPP_ */

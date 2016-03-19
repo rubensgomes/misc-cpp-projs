@@ -52,7 +52,7 @@ namespace rg
          */
         virtual void handleEvent(const HANDLE &,
                 const EventType &,
-                const std::string &);
+                const std::string &) = 0;
 
         /**
          * Returns the handle being used by the event handler.

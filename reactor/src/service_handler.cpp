@@ -14,6 +14,8 @@
 
 #include <boost/log/trivial.hpp>
 
+namespace rg
+{
 
 ServiceHandler::~ServiceHandler()
 {
@@ -22,3 +24,4 @@ ServiceHandler::~ServiceHandler()
                              << "] being destructed.";
 }
 
+}

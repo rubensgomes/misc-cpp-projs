@@ -22,7 +22,15 @@ using namespace std;
 namespace rg
 {
 
-SingletonCreationStrategy::SingletonCreationStrategy()
+template <typename T>
+ostream & operator << (ostream & out, const SingletonCreationStrategy<T> & rhs)
+{
+    out << rhs << endl;
+    return (out);
+}
+
+template <typename T>
+SingletonCreationStrategy<T>::SingletonCreationStrategy()
 :m_handler(nullptr)
 {
     BOOST_LOG_TRIVIAL(trace) << "SingletonCreationStrategy ["
@@ -30,37 +38,49 @@ SingletonCreationStrategy::SingletonCreationStrategy()
                              << "] constructed.";
 }
 
-SingletonCreationStrategy::~SingletonCreationStrategy()
+template <typename T>
+SingletonCreationStrategy<T>::~SingletonCreationStrategy()
 {
     BOOST_LOG_TRIVIAL(trace) << "SingletonCreationStrategy ["
                              << this
                              << "] being destructed.";
 }
 
-template<class T>
-unique_ptr<ServiceHandler> SingletonCreationStrategy::create(
-        const HANDLE & handle)
+template <typename T>
+ServiceHandler * SingletonCreationStrategy<T>::create(void)
 {
-    if(m_handler == nullptr)
+    BOOST_LOG_TRIVIAL(trace) << "SingletonCreationStrategy entering create ...";
+
+    if(m_handler)
     {
-        T * handler = new T();
+        BOOST_LOG_TRIVIAL(trace) << "returning previously created m_handler ...";
+        return(m_handler.get());
+    }
+    else
+    {
+        BOOST_LOG_TRIVIAL(trace) << "creating m_handler ...";
+        return(do_create());
+    }
+}
 
-        BOOST_LOG_TRIVIAL(trace) << "checking type of T.";
+template <typename T>
+unique_ptr<ServiceHandler> SingletonCreationStrategy<T>::do_create(void)
+{
+    BOOST_LOG_TRIVIAL(trace) << "checking typename T.";
 
-        // check the template "T" class type
-        ServiceHandler * type =
-            dynamic_cast<ServiceHandler *> (handler);
-        if(! type)
-        {
-            throw new invalid_argument("T is not a ServiceClass");
-        }
+    T * handler = new T();
 
-        m_handler(handler);
+    // check the template "T" class type
+    ServiceHandler * type =
+        dynamic_cast<ServiceHandler *> (handler);
+    if(! type)
+    {
+        delete handler;
+        throw new invalid_argument("T is not a ServiceClass");
     }
 
-    BOOST_LOG_TRIVIAL(trace) << "service handler is opening handle.";
-    m_handler->open(handle);
-    return m_handler;
+    m_handler(handler);
+    return m_handler.get();
 }
 
 }
