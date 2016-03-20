@@ -85,8 +85,9 @@ namespace rg
         virtual void handleEvents(void) = 0;
 
         /**
-         * Close all resources used by the Reactor,  and stops handling
-         * further events.  Basically it shuts down the Reactor.
+         * Close all resources used by the Reactor,  and stops
+         * handling further events.  Basically it shuts down
+         * the Reactor.
          */
         virtual void close(void) = 0;
     };

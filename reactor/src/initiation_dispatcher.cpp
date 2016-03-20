@@ -1,0 +1,153 @@
+/*
+ * **********************************************************
+ * ALL RIGHTS RESERVED,
+ * COPYRIGHT (C) Rubens S. Gomes,  2016
+ *
+ * Author: Rubens S. Gomes
+ *
+ * File: InitiationDispatcher.cpp
+ *
+ * Date:  Mar 18, 2016
+ * ********************************************************
+ */
+#include "initiation_dispatcher.hpp"
+
+// threadpool
+#include "ondemand_task_thread.hpp"
+
+#include <boost/log/trivial.hpp>
+
+using namespace std;
+
+namespace rg
+{
+
+InitiationDispatcher::InitiationDispatcher()
+: m_is_closed(false)
+{
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher ["
+                             << this
+                             << "] constructed.";
+}
+
+InitiationDispatcher::~InitiationDispatcher()
+{
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher ["
+                             << this
+                             << "] being destructed.";
+}
+
+void InitiationDispatcher::registerHandler(
+        const EventHandler & handler,
+        const EventType & type)
+{
+
+    if(m_is_closed)
+    {
+        throw new runtime_error(
+                "The dispatcher is closed.");
+    }
+
+    string id = handler.getId();
+
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher registering handler w/ID ["
+                             << id
+                             << "]";
+
+    if (m_handlers.find(id))
+    {
+        throw invalid_argument ("Event handler with ID [" +
+                id + "] has already been registered.");
+    }
+
+    EventTypeHandler type_handler;
+    type_handler.type = type;
+    type_handler.handler = handler;
+
+    m_handlers.insert(pair<string,EventTypeHandler>(id, type_handler));
+}
+
+void InitiationDispatcher::removeHandler(const EventHandler & handler)
+{
+    string id = handler.getId();
+
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher removing handler w/ID ["
+                             << id
+                             << "]";
+
+    m_handlers.erase(id);
+}
+
+void InitiationDispatcher::removeAllHandlers(void)
+{
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher removing all handlers";
+
+    m_handlers.clear();
+}
+
+void InitiationDispatcher::handleEvents(void)
+{
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher entering handleEvents";
+
+    typedef map<string, EventTypeHandler>::iterator hndlr_iter_t;
+
+    string msg = "checking handler ";
+
+    for(hndlr_iter_t iter = m_handlers.begin();
+            iter != m_handlers.end();
+            iter++)
+    {
+        msg += iter->second.handler.getId();
+        msg += "]";
+
+        BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher "
+                                 << msg;
+
+        if ( iter->second.type == EventType::ACCEPT )
+        {
+            // create a task to be run by a separate thread
+            unique_ptr<ServerSocketTask> task(
+                    new ServerSocketTask(iter->second.handler));
+
+            BOOST_LOG_TRIVIAL(trace) << "launching server socket task thread.";
+
+            OnDemandTaskThread(move(task));
+        }
+    }
+
+}
+
+void InitiationDispatcher::close(void)
+{
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher entering close.";
+
+    closeHandles();
+    m_is_closed = true;
+}
+
+void InitiationDispatcher::closeHandles(void)
+{
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher entering closeHandles.";
+
+    typedef map<string, EventTypeHandler>::iterator hndlr_iter_t;
+
+    string msg = "closing event handler w/ID [";
+
+    for(hndlr_iter_t iter = m_handlers.begin();
+            iter != m_handlers.end();
+            iter++)
+    {
+        msg += iter->second.handler.getId();
+        msg += "]";
+
+        BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher "
+                                 << msg;
+
+        iter->second.handler.handleEvent(
+                iter->second.handler.getHandle(),
+                EventType::CLOSE,
+                msg);
+    }
+}
+
+} /* namespace rg */
