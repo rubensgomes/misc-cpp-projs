@@ -55,24 +55,30 @@ namespace rg
         virtual ~Reactor() = 0;
 
         /**
-         * Registers an event handler (e.g., Acceptor) which is
-         * interested in receiving and processing that event. At most
-         * one handler for a given handle ID can be registered.
-         * Duplicate handle IDs are not permitted.
+         * Registers an EventHandler (e.g., Acceptor)
+         * which is interested in receiving and processing
+         * that event. At most one handler for a given HANDLE
+         * ID can be registered.Duplicate HANDLEs are not
+         * permitted.
          *
-         * @param the event handler that will handle the event.
-         * @param the event type that the event handler is
+         * @param the Acceptor EventHandler that will
+         * handle the event.
+         * @param the EventType that the event handler is
          * interested in.
          */
         virtual void registerHandler(const EventHandler &,
                 const EventType &) = 0;
 
         /**
-         * De-registers the given event handler.
+         * De-registers the given EventHandler and its
+         * corresponding EventType.
          *
-         * @param the event handler previously registered.
+         * @param the EventHandler previously registered.
+         * @param the EventType associated with the
+         * EventHandler.
          */
-        virtual void removeHandler(const EventHandler &) = 0;
+        virtual void removeHandler(const EventHandler &,
+                const EventType &) = 0;
 
         /**
          * De-registers all event handlers.
@@ -85,9 +91,9 @@ namespace rg
         virtual void handleEvents(void) = 0;
 
         /**
-         * Close all resources used by the Reactor,  and stops
-         * handling further events.  Basically it shuts down
-         * the Reactor.
+         * Close all resources used by the Reactor,
+         * and stops handling further events.
+         * Basically it shuts down the Reactor.
          */
         virtual void close(void) = 0;
     };

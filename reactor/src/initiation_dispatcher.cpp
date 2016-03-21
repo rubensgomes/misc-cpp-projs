@@ -37,10 +37,13 @@ InitiationDispatcher::~InitiationDispatcher()
                              << "] being destructed.";
 }
 
+// synchronized
 void InitiationDispatcher::registerHandler(
         const EventHandler & handler,
         const EventType & type)
 {
+
+    lock_guard<mutex> grd_lock(m_mutex);
 
     if(m_is_closed)
     {
@@ -67,19 +70,38 @@ void InitiationDispatcher::registerHandler(
     m_handlers.insert(pair<string,EventTypeHandler>(id, type_handler));
 }
 
-void InitiationDispatcher::removeHandler(const EventHandler & handler)
+// synchronized
+void InitiationDispatcher::removeHandler(const EventHandler & handler,
+        const EventType & type)
 {
+    lock_guard<mutex> grd_lock(m_mutex);
+
     string id = handler.getId();
 
-    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher removing handler w/ID ["
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher searching handler w/ID ["
                              << id
                              << "]";
 
-    m_handlers.erase(id);
+    auto type_handler = m_handlers.find(id);
+    if(type_handler != m_handlers.end())
+    {
+        // found handler
+        if (type_handler->second.type == type)
+        {
+            BOOST_LOG_TRIVIAL(info) << "Removing handler w/ID ["
+                                    << id + "] and type ["
+                                    << type
+                                    << "]";
+            m_handlers.erase(id);
+        }
+    }
 }
 
+// synchronized
 void InitiationDispatcher::removeAllHandlers(void)
 {
+    lock_guard<mutex> grd_lock(m_mutex);
+
     BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher removing all handlers";
 
     m_handlers.clear();
@@ -103,7 +125,7 @@ void InitiationDispatcher::handleEvents(void)
         BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher "
                                  << msg;
 
-        if ( iter->second.type == EventType::ACCEPT )
+        if ( iter->second.type == EventType::ACCEPT_EVENT )
         {
             // create a task to be run by a separate thread
             unique_ptr<ServerSocketTask> task(
@@ -117,8 +139,11 @@ void InitiationDispatcher::handleEvents(void)
 
 }
 
+// syncrhonized
 void InitiationDispatcher::close(void)
 {
+    lock_guard<mutex> grd_lock(m_mutex);
+
     BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher entering close.";
 
     closeHandles();
@@ -145,7 +170,7 @@ void InitiationDispatcher::closeHandles(void)
 
         iter->second.handler.handleEvent(
                 iter->second.handler.getHandle(),
-                EventType::CLOSE,
+                EventType::CLOSE_EVENT,
                 msg);
     }
 }

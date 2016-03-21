@@ -28,12 +28,24 @@ namespace rg
      */
     typedef void * HANDLE;
 
+    /**
+     * TITLE
+     * Types of events handled by the
+     * Initiation Dispatcher.
+     *
+     * DESCRIPTION
+     * These values are powers of two so
+     * their bits can be efficiently ‘‘or’d’’
+     * together to form composite values.
+     */
     enum class EventType
     {
-        ACCEPT,
-        CLOSE,
-        REMOVED,
-        SIGNAL
+        ACCEPT_EVENT = 01,
+        READ_EVENT = 02,
+        WRITE_EVENT = 04,
+        TIMEOUT_EVENT = 010,
+        SIGNAL_EVENT = 020,
+        CLOSE_EVENT = 040
     };
 
     /**

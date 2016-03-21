@@ -13,11 +13,13 @@
 #ifndef REACTOR_INITIATIONDISPATCHER_HPP_
 #define REACTOR_INITIATIONDISPATCHER_HPP_
 
+#include "event_handler.hpp"
 #include "reactor.hpp"
 
 #include <boost/noncopyable.hpp>
 
 #include <map>
+#include <mutex>
 #include <string>
 
 namespace rg
@@ -26,9 +28,8 @@ namespace rg
     /**
      * Singleton class
      * <p>
-     * Registers event handlers, and manages events.
-     * Once an event is triggered it dispatches to
-     * one of the previously registered event handler.
+     * Demultiplex and dispatch EventHandlers
+     * in response to client requests.
      *
      * @author Rubens Gomes
      */
@@ -36,14 +37,30 @@ namespace rg
         private boost::noncopyable
     {
     public:
+        // Singleton instance function
         static InitiationDispatcher * instance();
 
         // Overriden function
+        /**
+         * Register an Acceptor EventHandler of a
+         * particular EventType (e.g., READ_EVENT,
+         * ACCEPT_EVENT, etc.).
+         *
+         * @param the Acceptor EventHandler
+         * @param the EventType
+         */
         void registerHandler(const EventHandler &,
                 const EventType &) override;
 
         // Overriden function
-        void removeHandler(const EventHandler &) override;
+        /**
+         * Remove an EventHandler of a particular
+         * EventType.
+         *
+         * @param
+         */
+        void removeHandler(const EventHandler &,
+                const EventType &) override;
 
         // Overriden function
         void removeAllHandlers(void) override;
@@ -75,6 +92,7 @@ namespace rg
 
         bool m_is_closed;
         std::map<std::string, EventTypeHandler> m_handlers;
+        std::mutex m_mutex;
     };
 
 } /* namespace rg */
