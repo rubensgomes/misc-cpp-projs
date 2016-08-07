@@ -32,7 +32,8 @@ include ${TOPDIR}/makefiles/Defs.mk
 ##
 SUBDIRS = \
   threadpool \
-  reactor
+  reactor \
+  utility
 
 ######################################################################
 ###########################  T A R G E T S ###########################

@@ -42,20 +42,23 @@ void InitiationDispatcher::registerHandler(
         const EventHandler & handler,
         const EventType & type)
 {
+    BOOST_LOG_TRIVIAL(info) <<
+            "InitiationDispatcher entering registerHandler.";
 
     lock_guard<mutex> grd_lock(m_mutex);
 
     if(m_is_closed)
     {
         throw new runtime_error(
-                "The dispatcher is closed.");
+                "The initiation dispatcher is closed.");
     }
 
     string id = handler.getId();
 
-    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher registering handler w/ID ["
-                             << id
-                             << "]";
+    BOOST_LOG_TRIVIAL(info) <<
+            "Registering event handler w/ID [" +
+            id +  "] and type [" +
+            EventTypeMap[type] + "]";
 
     if (m_handlers.find(id))
     {
@@ -67,18 +70,21 @@ void InitiationDispatcher::registerHandler(
     type_handler.type = type;
     type_handler.handler = handler;
 
-    m_handlers.insert(pair<string,EventTypeHandler>(id, type_handler));
+    m_handlers.insert(
+            pair<string,EventTypeHandler>(id, type_handler));
 }
 
 // synchronized
 void InitiationDispatcher::removeHandler(const EventHandler & handler,
         const EventType & type)
 {
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher entering removeHandler.";
+
     lock_guard<mutex> grd_lock(m_mutex);
 
     string id = handler.getId();
 
-    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher searching handler w/ID ["
+    BOOST_LOG_TRIVIAL(trace) << "Searching event handler w/ID ["
                              << id
                              << "]";
 
@@ -88,9 +94,9 @@ void InitiationDispatcher::removeHandler(const EventHandler & handler,
         // found handler
         if (type_handler->second.type == type)
         {
-            BOOST_LOG_TRIVIAL(info) << "Removing handler w/ID ["
+            BOOST_LOG_TRIVIAL(info) << "Removing event handler w/ID ["
                                     << id + "] and type ["
-                                    << type
+                                    << EventTypeMap[type]
                                     << "]";
             m_handlers.erase(id);
         }
@@ -100,16 +106,21 @@ void InitiationDispatcher::removeHandler(const EventHandler & handler,
 // synchronized
 void InitiationDispatcher::removeAllHandlers(void)
 {
+    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher entering removeAllHandlers";
+
     lock_guard<mutex> grd_lock(m_mutex);
 
-    BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher removing all handlers";
+    BOOST_LOG_TRIVIAL(info) << "Removing all event handlers";
 
     m_handlers.clear();
 }
 
+// synchronized
 void InitiationDispatcher::handleEvents(void)
 {
     BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher entering handleEvents";
+
+    lock_guard<mutex> grd_lock(m_mutex);
 
     typedef map<string, EventTypeHandler>::iterator hndlr_iter_t;
 
@@ -125,16 +136,8 @@ void InitiationDispatcher::handleEvents(void)
         BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher "
                                  << msg;
 
-        if ( iter->second.type == EventType::ACCEPT_EVENT )
-        {
-            // create a task to be run by a separate thread
-            unique_ptr<ServerSocketTask> task(
-                    new ServerSocketTask(iter->second.handler));
-
-            BOOST_LOG_TRIVIAL(trace) << "launching server socket task thread.";
-
-            OnDemandTaskThread(move(task));
-        }
+        iter->second.handler.handleEvent(
+                EventType::ACCEPT_EVENT, msg);
     }
 
 }
@@ -142,9 +145,9 @@ void InitiationDispatcher::handleEvents(void)
 // syncrhonized
 void InitiationDispatcher::close(void)
 {
-    lock_guard<mutex> grd_lock(m_mutex);
-
     BOOST_LOG_TRIVIAL(trace) << "InitiationDispatcher entering close.";
+
+    lock_guard<mutex> grd_lock(m_mutex);
 
     closeHandles();
     m_is_closed = true;
@@ -169,7 +172,6 @@ void InitiationDispatcher::closeHandles(void)
                                  << msg;
 
         iter->second.handler.handleEvent(
-                iter->second.handler.getHandle(),
                 EventType::CLOSE_EVENT,
                 msg);
     }

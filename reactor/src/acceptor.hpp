@@ -51,7 +51,7 @@ namespace rg
          * create and activate service handlers.
          */
         virtual void open(int port_nr,
-                const Reactor &,
+                Reactor &,
                 const AcceptorStrategyAbstractFactory &) = 0;
     };
 }

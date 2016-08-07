@@ -43,9 +43,8 @@ namespace rg
          * established.  This must be done upfront before any
          * other methods are called on the service handler.
          *
-         * @param the socket handle
          */
-        virtual void open(const HANDLE &) = 0;
+        virtual void open() = 0;
 
         /**
          * Closes this service handler by properly closing
